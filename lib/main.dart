@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/rfw/runtime/rfw_environment.dart';
 import 'features/about/presentation/about_page.dart';
+import 'features/agui/presentation/agui_rfw_page.dart';
 import 'features/demo/presentation/demo_page.dart';
 import 'features/events/presentation/events_demo_page.dart';
 import 'features/inventory/presentation/inventory_demo_page.dart';
@@ -53,11 +54,31 @@ class HomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // About card - styled differently as it's static content
-          _AboutCard(
+          // Documentation section
+          Text(
+            'Documentation',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _DocCard(
+            icon: Icons.info_outline,
+            title: 'About This Spike',
+            subtitle: 'RFW overview, Dart vs JS, pros/cons',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AboutPage()),
+            ),
+          ),
+          const SizedBox(height: 8),
+          _DocCard(
+            icon: Icons.smart_toy_outlined,
+            title: 'AG-UI + RFW',
+            subtitle: 'Agent-generated UI with Remote Flutter Widgets',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AguiRfwPage()),
             ),
           ),
           const SizedBox(height: 24),
@@ -190,10 +211,18 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _AboutCard extends StatelessWidget {
+class _DocCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
   final VoidCallback onTap;
 
-  const _AboutCard({required this.onTap});
+  const _DocCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -215,15 +244,15 @@ class _AboutCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  Icons.info_outline,
+                  icon,
                   color: Theme.of(context).colorScheme.primary,
-                  size: 28,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 16),
@@ -232,21 +261,18 @@ class _AboutCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'About This Spike',
+                      title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Text(
-                      '\u2022 What is Remote Flutter Widgets (RFW)?\n'
-                      '\u2022 Why server-driven UI is harder in Dart\n'
-                      '\u2022 Pros, cons, and ideal use cases',
+                      subtitle,
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                        height: 1.4,
                       ),
                     ),
                   ],

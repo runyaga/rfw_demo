@@ -1,0 +1,617 @@
+// Form 15: Complete Registration Form (Multi-section)
+// Three sections: Personal Info, Account Setup, Preferences
+// Progress indicator, per-section validation, section navigation.
+//
+// Events fired:
+// - 'field_changed' with { formId: String, field: String, value: String }
+// - 'preference_changed' with { formId: String, field: String, value: String/bool }
+// - 'interest_toggled' with { formId: String, interestId: String }
+// - 'form_next_section' with { formId: String }
+// - 'form_prev_section' with { formId: String }
+// - 'form_submit' with { formId: String, data: {...} }
+// - 'form_start_over' with { formId: String }
+
+import core;
+import material;
+
+// Progress step indicator
+widget ProgressStep = Column(
+  mainAxisSize: "min",
+  children: [
+    switch args.isActive {
+      true: ClipRRect(
+        borderRadius: [16.0],
+        child: ColoredBox(
+          color: 0xFF1976D2,
+          child: SizedBox(
+            width: 32.0,
+            height: 32.0,
+            child: Center(
+              child: Text(
+                text: args.stepNumber,
+                style: { fontSize: 14.0, fontWeight: "bold", color: 0xFFFFFFFF },
+              ),
+            ),
+          ),
+        ),
+      ),
+      default: switch args.isCompleted {
+        true: ClipRRect(
+          borderRadius: [16.0],
+          child: ColoredBox(
+            color: 0xFF4CAF50,
+            child: SizedBox(
+              width: 32.0,
+              height: 32.0,
+              child: Center(
+                child: Text(
+                  text: "✓",
+                  style: { fontSize: 16.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                ),
+              ),
+            ),
+          ),
+        ),
+        default: ClipRRect(
+          borderRadius: [16.0],
+          child: ColoredBox(
+            color: 0xFFE0E0E0,
+            child: SizedBox(
+              width: 32.0,
+              height: 32.0,
+              child: Center(
+                child: Text(
+                  text: args.stepNumber,
+                  style: { fontSize: 14.0, fontWeight: "bold", color: 0xFF757575 },
+                ),
+              ),
+            ),
+          ),
+        ),
+      },
+    },
+    SizedBox(height: 4.0),
+    Text(
+      text: args.label,
+      style: {
+        fontSize: 10.0,
+        color: switch args.isActive {
+          true: 0xFF1976D2,
+          default: 0xFF757575,
+        },
+      },
+    ),
+  ],
+);
+
+// Radio option for contact method
+widget ContactRadio = InkWell(
+  onTap: event "preference_changed" {
+    formId: "registration",
+    field: "contactMethod",
+    value: args.value,
+  },
+  child: Padding(
+    padding: [8.0, 8.0, 8.0, 8.0],
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        switch args.isSelected {
+          true: Text(text: "●", style: { fontSize: 20.0, color: 0xFF1976D2 }),
+          default: Text(text: "○", style: { fontSize: 20.0, color: 0xFF757575 }),
+        },
+        SizedBox(width: 8.0),
+        Text(
+          text: args.label,
+          style: { fontSize: 14.0, color: 0xFF212121 },
+        ),
+      ],
+    ),
+  ),
+);
+
+// Interest checkbox
+widget InterestCheck = InkWell(
+  onTap: event "interest_toggled" {
+    formId: "registration",
+    interestId: args.interestId,
+  },
+  child: Padding(
+    padding: [4.0, 6.0, 4.0, 6.0],
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        switch args.isChecked {
+          true: Text(text: "☑", style: { fontSize: 18.0, color: 0xFF1976D2 }),
+          default: Text(text: "☐", style: { fontSize: 18.0, color: 0xFF757575 }),
+        },
+        SizedBox(width: 6.0),
+        Text(
+          text: args.label,
+          style: { fontSize: 13.0, color: 0xFF212121 },
+        ),
+      ],
+    ),
+  ),
+);
+
+widget RegistrationForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        // Header
+        Text(
+          text: "Create Account",
+          style: {
+            fontSize: 20.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 16.0),
+        // Progress indicator
+        Row(
+          mainAxisAlignment: "spaceEvenly",
+          mainAxisSize: "min",
+          children: [
+            ProgressStep(
+              stepNumber: "1",
+              label: "Personal",
+              isActive: data.isSection1,
+              isCompleted: data.section1Complete,
+            ),
+            SizedBox(
+              width: 40.0,
+              child: Divider(height: 2.0, color: 0xFFBDBDBD),
+            ),
+            ProgressStep(
+              stepNumber: "2",
+              label: "Account",
+              isActive: data.isSection2,
+              isCompleted: data.section2Complete,
+            ),
+            SizedBox(
+              width: 40.0,
+              child: Divider(height: 2.0, color: 0xFFBDBDBD),
+            ),
+            ProgressStep(
+              stepNumber: "3",
+              label: "Preferences",
+              isActive: data.isSection3,
+              isCompleted: data.section3Complete,
+            ),
+          ],
+        ),
+        SizedBox(height: 20.0),
+        // Section 1: Personal Info
+        switch data.isSection1 {
+          true: Column(
+            crossAxisAlignment: "stretch",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: "Personal Information",
+                style: { fontSize: 16.0, fontWeight: "bold", color: 0xFF424242 },
+              ),
+              SizedBox(height: 12.0),
+              // First Name
+              TextField(
+                value: data.firstName,
+                decoration: {
+                  labelText: "First Name",
+                  hintText: "John",
+                  border: "outline",
+                  prefixIcon: 0xE853,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "firstName",
+                },
+              ),
+              switch data.firstNameError {
+                "": SizedBox(height: 12.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 12.0],
+                  child: Text(
+                    text: data.firstNameError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+              // Last Name
+              TextField(
+                value: data.lastName,
+                decoration: {
+                  labelText: "Last Name",
+                  hintText: "Doe",
+                  border: "outline",
+                  prefixIcon: 0xE853,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "lastName",
+                },
+              ),
+              switch data.lastNameError {
+                "": SizedBox(height: 12.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 12.0],
+                  child: Text(
+                    text: data.lastNameError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+              // Date of Birth
+              TextField(
+                value: data.dob,
+                decoration: {
+                  labelText: "Date of Birth",
+                  hintText: "MM/DD/YYYY",
+                  border: "outline",
+                  prefixIcon: 0xE916,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "dob",
+                },
+              ),
+              switch data.dobError {
+                "": SizedBox(height: 12.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 12.0],
+                  child: Text(
+                    text: data.dobError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+              // Phone
+              TextField(
+                value: data.phone,
+                decoration: {
+                  labelText: "Phone Number",
+                  hintText: "(555) 123-4567",
+                  border: "outline",
+                  prefixIcon: 0xE0CD,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "phone",
+                },
+              ),
+              switch data.phoneError {
+                "": SizedBox(height: 0.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 0.0],
+                  child: Text(
+                    text: data.phoneError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+            ],
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Section 2: Account Setup
+        switch data.isSection2 {
+          true: Column(
+            crossAxisAlignment: "stretch",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: "Account Setup",
+                style: { fontSize: 16.0, fontWeight: "bold", color: 0xFF424242 },
+              ),
+              SizedBox(height: 12.0),
+              // Email
+              TextField(
+                value: data.email,
+                decoration: {
+                  labelText: "Email Address",
+                  hintText: "john@example.com",
+                  border: "outline",
+                  prefixIcon: 0xE0BE,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "email",
+                },
+              ),
+              switch data.emailError {
+                "": SizedBox(height: 12.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 12.0],
+                  child: Text(
+                    text: data.emailError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+              // Password
+              TextField(
+                value: data.password,
+                decoration: {
+                  labelText: "Password",
+                  hintText: "Min 8 characters",
+                  border: "outline",
+                  prefixIcon: 0xE897,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "password",
+                },
+              ),
+              switch data.passwordError {
+                "": SizedBox(height: 12.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 12.0],
+                  child: Text(
+                    text: data.passwordError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+              // Confirm Password
+              TextField(
+                value: data.confirmPassword,
+                decoration: {
+                  labelText: "Confirm Password",
+                  hintText: "Re-enter password",
+                  border: "outline",
+                  prefixIcon: 0xE897,
+                },
+                onChanged: event "field_changed" {
+                  formId: "registration",
+                  field: "confirmPassword",
+                },
+              ),
+              switch data.confirmPasswordError {
+                "": SizedBox(height: 0.0),
+                default: Padding(
+                  padding: [12.0, 4.0, 0.0, 0.0],
+                  child: Text(
+                    text: data.confirmPasswordError,
+                    style: { fontSize: 12.0, color: 0xFFF44336 },
+                  ),
+                ),
+              },
+            ],
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Section 3: Preferences
+        switch data.isSection3 {
+          true: Column(
+            crossAxisAlignment: "stretch",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: "Preferences",
+                style: { fontSize: 16.0, fontWeight: "bold", color: 0xFF424242 },
+              ),
+              SizedBox(height: 12.0),
+              // Newsletter toggle
+              Row(
+                mainAxisSize: "min",
+                children: [
+                  Expanded(
+                    child: Text(
+                      text: "Subscribe to newsletter",
+                      style: { fontSize: 14.0, color: 0xFF212121 },
+                    ),
+                  ),
+                  Switch(
+                    value: data.newsletter,
+                    onChanged: event "preference_changed" {
+                      formId: "registration",
+                      field: "newsletter",
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.0),
+              // Contact method
+              Text(
+                text: "Preferred contact method",
+                style: { fontSize: 14.0, color: 0xFF424242 },
+              ),
+              SizedBox(height: 4.0),
+              Row(
+                mainAxisSize: "min",
+                children: [
+                  ContactRadio(
+                    value: "email",
+                    label: "Email",
+                    isSelected: data.contactEmail,
+                  ),
+                  SizedBox(width: 16.0),
+                  ContactRadio(
+                    value: "phone",
+                    label: "Phone",
+                    isSelected: data.contactPhone,
+                  ),
+                  SizedBox(width: 16.0),
+                  ContactRadio(
+                    value: "sms",
+                    label: "SMS",
+                    isSelected: data.contactSms,
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.0),
+              // Interests
+              Text(
+                text: "Select your interests",
+                style: { fontSize: 14.0, color: 0xFF424242 },
+              ),
+              SizedBox(height: 4.0),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 0.0,
+                children: [
+                  InterestCheck(interestId: "tech", label: "Technology", isChecked: data.techChecked),
+                  InterestCheck(interestId: "sports", label: "Sports", isChecked: data.sportsChecked),
+                  InterestCheck(interestId: "music", label: "Music", isChecked: data.musicChecked),
+                  InterestCheck(interestId: "travel", label: "Travel", isChecked: data.travelChecked),
+                  InterestCheck(interestId: "food", label: "Food", isChecked: data.foodChecked),
+                  InterestCheck(interestId: "art", label: "Art", isChecked: data.artChecked),
+                ],
+              ),
+            ],
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Validation message
+        switch data.sectionError {
+          "": SizedBox(height: 16.0),
+          default: Padding(
+            padding: [0.0, 12.0, 0.0, 4.0],
+            child: ClipRRect(
+              borderRadius: [8.0],
+              child: ColoredBox(
+                color: 0xFFFFEBEE,
+                child: Padding(
+                  padding: [12.0, 8.0, 12.0, 8.0],
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE002, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFF44336),
+                      SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          text: data.sectionError,
+                          style: { fontSize: 13.0, color: 0xFFF44336 },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        },
+        // Navigation buttons
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "min",
+          children: [
+            // Left side: Start Over (always) or Previous
+            switch data.isSection1 {
+              true: TextButton(
+                onPressed: event "form_start_over" {
+                  formId: "registration",
+                },
+                child: Text(
+                  text: "Start Over",
+                  style: { color: 0xFF757575 },
+                ),
+              ),
+              default: TextButton(
+                onPressed: event "form_prev_section" {
+                  formId: "registration",
+                },
+                child: Row(
+                  mainAxisSize: "min",
+                  children: [
+                    Icon(icon: 0xE5CB, fontFamily: "MaterialIcons", size: 18.0, color: 0xFF1976D2),
+                    SizedBox(width: 4.0),
+                    Text(
+                      text: "Previous",
+                      style: { color: 0xFF1976D2 },
+                    ),
+                  ],
+                ),
+              ),
+            },
+            // Right side: Next or Submit
+            switch data.isSection3 {
+              true: switch data.canSubmit {
+                true: ElevatedButton(
+                  onPressed: event "form_submit" {
+                    formId: "registration",
+                    data: {
+                      firstName: data.firstName,
+                      lastName: data.lastName,
+                      dob: data.dob,
+                      phone: data.phone,
+                      email: data.email,
+                      newsletter: data.newsletter,
+                      contactMethod: data.contactMethod,
+                      interests: data.selectedInterests,
+                    },
+                  },
+                  style: {
+                    backgroundColor: 0xFF4CAF50,
+                  },
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                      SizedBox(width: 8.0),
+                      Text(text: "Create Account"),
+                    ],
+                  ),
+                ),
+                default: ElevatedButton(
+                  onPressed: event "form_submit_denied" {
+                    formId: "registration",
+                    reason: "incomplete",
+                  },
+                  style: {
+                    backgroundColor: 0xFFBDBDBD,
+                  },
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                      SizedBox(width: 8.0),
+                      Text(text: "Create Account"),
+                    ],
+                  ),
+                ),
+              },
+              default: switch data.canProceed {
+                true: ElevatedButton(
+                  onPressed: event "form_next_section" {
+                    formId: "registration",
+                  },
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Text(text: "Next"),
+                      SizedBox(width: 4.0),
+                      Icon(icon: 0xE5CC, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                    ],
+                  ),
+                ),
+                default: ElevatedButton(
+                  onPressed: event "form_next_section" {
+                    formId: "registration",
+                  },
+                  style: {
+                    backgroundColor: 0xFFBDBDBD,
+                  },
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Text(text: "Next"),
+                      SizedBox(width: 4.0),
+                      Icon(icon: 0xE5CC, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                    ],
+                  ),
+                ),
+              },
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);
