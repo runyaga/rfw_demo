@@ -1621,6 +1621,28 @@ Files to create:
 
 **Exit Condition:** All 15 form widgets functional with validation and events.
 
+### Stage 11 Progress
+
+**Status:** In Progress (5 of 15 forms complete) - Basic Forms page done
+
+**Completed:**
+- ✅ Form 1: Simple Text Input - text_changed, form_submit, form_clear events
+- ✅ Form 2: Email Input with Validation - email_changed, form_submit, form_submit_denied, form_cancel events
+- ✅ Form 3: Password Input - password_changed, visibility_toggled, form_submit, form_reset events
+- ✅ Form 4: Phone Number Input - phone_changed, country_selector_tap, form_submit, form_submit_denied, form_clear events
+- ✅ Form 5: Numeric Input with Range - increment, decrement, form_submit, form_reset events
+- ✅ Basic Forms demo page with event log (all 5 forms functional)
+- ✅ Added `_ControlledTextField` to material_registry for clear/reset support
+
+**Lessons Learned (Stage 11):**
+- RFW TextField doesn't support controlled value by default - created `_ControlledTextField` wrapper
+- Only sync TextField from host when value is cleared (empty string) to avoid cursor/focus issues during typing
+- Use `form_submit_denied` event for invalid submissions instead of `form_submit` with `isValid: false`
+- Always use `mainAxisSize: "min"` on Column/Row in forms to prevent overflow
+- IconButton is not registered in RFW - use InkWell + Icon instead
+- Material Icons codepoints are unreliable - use Text characters ("+", "−") in styled containers when icons fail
+- Container decoration color doesn't render - use ClipRRect + ColoredBox + SizedBox pattern for colored rounded containers
+
 ---
 
 ## Stage 12: Contract Testing & Versioning Governance

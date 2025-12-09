@@ -8,6 +8,7 @@ import 'features/inventory/presentation/inventory_demo_page.dart';
 import 'features/network/presentation/network_demo_page.dart';
 import 'features/remote_view/remote_view.dart';
 import 'features/widgets_extended/presentation/extended_widgets_demo_page.dart';
+import 'features/forms_basic/presentation/basic_forms_page.dart';
 
 void main() {
   // Initialize RFW environment before running the app
@@ -100,6 +101,15 @@ class HomePage extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ExtendedWidgetsDemoPage()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _NavCard(
+            title: 'Stage 11: Basic Forms',
+            description: 'Text, email, password, phone, numeric inputs',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BasicFormsPage()),
             ),
           ),
         ],

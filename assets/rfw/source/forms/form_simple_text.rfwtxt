@@ -1,0 +1,77 @@
+// Form 1: Simple Text Input
+// Basic single-line text input with submit and clear buttons.
+//
+// Events fired:
+// - 'text_changed' with { field: String, value: String }
+// - 'form_submit' with { formId: String, data: { name: String } }
+// - 'form_clear' with { formId: String }
+
+import core;
+import material;
+
+widget SimpleTextForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Simple Text Input",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Enter your name below",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        TextField(
+          value: data.name,
+          decoration: {
+            labelText: "Name",
+            hintText: "Enter your name",
+            border: "outline",
+          },
+          onChanged: event "text_changed" {
+            field: "name",
+            value: data.name,
+          },
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_clear" {
+                formId: "simple_text",
+              },
+              child: Text(
+                text: "Clear",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            ElevatedButton(
+              onPressed: event "form_submit" {
+                formId: "simple_text",
+                data: { name: data.name },
+              },
+              child: Text(text: "Submit"),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);

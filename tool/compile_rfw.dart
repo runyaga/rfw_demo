@@ -23,7 +23,7 @@ void main() async {
   var compiledCount = 0;
   var errorCount = 0;
 
-  await for (final entity in sourceDir.list()) {
+  await for (final entity in sourceDir.list(recursive: true)) {
     if (entity is File && entity.path.endsWith('.rfwtxt')) {
       final fileName = entity.path.split('/').last;
       final baseName = fileName.replaceFirst('.rfwtxt', '');

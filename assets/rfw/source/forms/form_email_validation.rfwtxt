@@ -1,0 +1,115 @@
+// Form 2: Email Input with Validation
+// Email field with real-time format validation and error state display.
+//
+// Events fired:
+// - 'email_changed' with { value: String, isValid: bool }
+// - 'form_submit' with { formId: String, data: { email: String }, isValid: bool }
+// - 'form_cancel' with { formId: String }
+
+import core;
+import material;
+
+widget EmailValidationForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Email Validation",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Enter a valid email address",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        TextField(
+          value: data.email,
+          decoration: {
+            labelText: "Email",
+            hintText: "user@example.com",
+            errorText: data.emailError,
+            prefixIcon: 0xE0BE,
+            suffixIcon: switch data.isValid {
+              true: 0xE86C,
+              false: 0xE000,
+              default: 0,
+            },
+            border: "outline",
+          },
+          keyboardType: "emailAddress",
+          onChanged: event "email_changed" {
+            value: data.email,
+            isValid: data.isValid,
+          },
+        ),
+        switch data.isValid {
+          true: Padding(
+            padding: [0.0, 8.0, 0.0, 0.0],
+            child: Row(
+              mainAxisSize: "min",
+              children: [
+                Icon(icon: 0xE86C, fontFamily: "MaterialIcons", size: 16.0, color: 0xFF4CAF50),
+                SizedBox(width: 4.0),
+                Text(
+                  text: "Valid email format",
+                  style: { fontSize: 12.0, color: 0xFF4CAF50 },
+                ),
+              ],
+            ),
+          ),
+          default: SizedBox(height: 8.0),
+        },
+        SizedBox(height: 8.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_cancel" {
+                formId: "email_input",
+              },
+              child: Text(
+                text: "Cancel",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            switch data.isValid {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "email_input",
+                  data: { email: data.email },
+                  isValid: true,
+                },
+                child: Text(text: "Submit"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "email_input",
+                  reason: "invalid_email",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Submit"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

@@ -1,0 +1,183 @@
+// Form 5: Numeric Input with Range
+// Quantity selector with increment/decrement and min/max bounds.
+//
+// Events fired:
+// - 'quantity_changed' with { value: int }
+// - 'increment' with { currentValue: int }
+// - 'decrement' with { currentValue: int }
+// - 'form_submit' with { formId: String, data: { quantity: int } }
+// - 'form_reset' with { formId: String }
+
+import core;
+import material;
+
+widget NumericForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Quantity Selector",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Select quantity (1-99)",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "center",
+          mainAxisSize: "min",
+          children: [
+            switch data.canDecrement {
+              true: InkWell(
+                onTap: event "decrement" { currentValue: data.quantity },
+                child: ClipRRect(
+                  borderRadius: [24.0],
+                  child: ColoredBox(
+                    color: 0xFF1976D2,
+                    child: SizedBox(
+                      width: 48.0,
+                      height: 48.0,
+                      child: Center(
+                        child: Text(
+                          text: "−",
+                          style: { fontSize: 32.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              default: ClipRRect(
+                borderRadius: [24.0],
+                child: ColoredBox(
+                  color: 0xFFBDBDBD,
+                  child: SizedBox(
+                    width: 48.0,
+                    height: 48.0,
+                    child: Center(
+                      child: Text(
+                        text: "−",
+                        style: { fontSize: 32.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+            SizedBox(width: 16.0),
+            Container(
+              padding: [16.0, 8.0, 16.0, 8.0],
+              decoration: {
+                border: {
+                  color: 0xFF1976D2,
+                  width: 2.0,
+                },
+                borderRadius: [8.0],
+              },
+              child: Text(
+                text: data.quantityDisplay,
+                style: {
+                  fontSize: 32.0,
+                  fontWeight: "bold",
+                  color: 0xFF1976D2,
+                },
+              ),
+            ),
+            SizedBox(width: 16.0),
+            switch data.canIncrement {
+              true: InkWell(
+                onTap: event "increment" { currentValue: data.quantity },
+                child: ClipRRect(
+                  borderRadius: [24.0],
+                  child: ColoredBox(
+                    color: 0xFF1976D2,
+                    child: SizedBox(
+                      width: 48.0,
+                      height: 48.0,
+                      child: Center(
+                        child: Text(
+                          text: "+",
+                          style: { fontSize: 32.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              default: ClipRRect(
+                borderRadius: [24.0],
+                child: ColoredBox(
+                  color: 0xFFBDBDBD,
+                  child: SizedBox(
+                    width: 48.0,
+                    height: 48.0,
+                    child: Center(
+                      child: Text(
+                        text: "+",
+                        style: { fontSize: 32.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            },
+          ],
+        ),
+        SizedBox(height: 8.0),
+        Row(
+          mainAxisAlignment: "center",
+          mainAxisSize: "min",
+          children: [
+            Text(
+              text: "Min: 1",
+              style: { fontSize: 12.0, color: 0xFF9E9E9E },
+            ),
+            SizedBox(width: 16.0),
+            Text(
+              text: "Max: 99",
+              style: { fontSize: 12.0, color: 0xFF9E9E9E },
+            ),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_reset" {
+                formId: "numeric_input",
+              },
+              child: Text(
+                text: "Reset",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            ElevatedButton(
+              onPressed: event "form_submit" {
+                formId: "numeric_input",
+                data: { quantity: data.quantity },
+              },
+              child: Text(text: "Submit"),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);

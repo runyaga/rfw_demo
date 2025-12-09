@@ -198,12 +198,24 @@ Icon(IconData(iconCode, fontFamily: 'MaterialIcons'))
 // In .rfwtxt - MUST include fontFamily for icons to render:
 Icon(icon: 0xe88a, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF000000)
 
-// Common icon code points:
+// Common icon code points (VERIFY before using - wrong codes show wrong icons!):
 // Icons.check = 0xe156
+// Icons.check_circle = 0xe86c
 // Icons.home = 0xe88a
 // Icons.settings = 0xe8b8
 // Icons.search = 0xe8b6
 // Icons.person = 0xe7fd
+// Icons.add = 0xe047
+// Icons.add_circle_outline = 0xe049
+// Icons.remove = 0xe15c
+// Icons.remove_circle_outline = 0xe15e
+// Icons.arrow_drop_down = 0xe313
+// Icons.visibility = 0xe8f4
+// Icons.visibility_off = 0xe8f5
+// Icons.email = 0xe0be
+// Icons.phone = 0xe0cd
+// Icons.lock = 0xe897
+// Icons.error = 0xe000
 ```
 
 ## Critical: `data` vs `args` in RFW Widgets
@@ -410,3 +422,9 @@ flutter test test/rfw/stage9/                   # Stage 9 widgets (22 tests)
 18. **Rounded colored boxes:** Wrap `ColoredBox` in `ClipRRect` for border radius
 19. **Icon fontFamily required:** In `.rfwtxt`, Icon MUST have `fontFamily: "MaterialIcons"` or icons show as `?` or wrong glyphs
 20. **Icon code points:** Use correct hex codes - `Icons.check` = `0xe156`, NOT `0xe876` or `0xe5ca`. Look up correct values.
+21. **Controlled TextField for forms:** RFW TextField doesn't support `value` prop by default - use `_ControlledTextField` wrapper in material_registry.dart
+22. **TextField sync on clear only:** Only sync TextField from host when value is empty (clear/reset action) - syncing during typing breaks cursor/focus
+23. **Form validation events:** Use `form_submit_denied` event for invalid form submissions, not `form_submit` with `isValid: false`
+24. **Form overflow prevention:** Always use `mainAxisSize: "min"` on Column/Row in RFW forms to prevent overflow in constrained layouts
+25. **IconButton not in RFW:** Use `InkWell` + `Container` + `Icon` instead of IconButton (not registered)
+26. **Icon codepoints are unreliable:** Material Icons codepoints vary between font versions. When uncertain, use Text characters instead (e.g., "+" and "−" in circular containers) rather than guessing icon codes

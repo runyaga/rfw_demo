@@ -1,0 +1,151 @@
+// Form 4: Phone Number Input
+// Phone field with country code and format validation.
+//
+// Events fired:
+// - 'phone_changed' with { value: String, isValid: bool }
+// - 'country_selected' with { code: String }
+// - 'form_submit' with { formId: String, data: { phone: String, countryCode: String } }
+// - 'form_clear' with { formId: String }
+
+import core;
+import material;
+
+widget PhoneForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Phone Number",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Enter your phone number",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisSize: "min",
+          crossAxisAlignment: "start",
+          children: [
+            SizedBox(
+              width: 90.0,
+              child: InkWell(
+                onTap: event "country_selector_tap" {},
+                child: Container(
+                  padding: [12.0, 16.0, 12.0, 16.0],
+                  decoration: {
+                    border: {
+                      color: 0xFF9E9E9E,
+                      width: 1.0,
+                    },
+                    borderRadius: [4.0],
+                  },
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Text(
+                        text: data.countryCode,
+                        style: { fontSize: 16.0, color: 0xFF212121 },
+                      ),
+                      SizedBox(width: 4.0),
+                      Icon(icon: 0xE313, fontFamily: "MaterialIcons", size: 18.0, color: 0xFF757575),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 8.0),
+            Expanded(
+              child: TextField(
+                value: data.phone,
+                decoration: {
+                  labelText: "Phone",
+                  hintText: "(555) 123-4567",
+                  errorText: data.phoneError,
+                  prefixIcon: 0xE0CD,
+                  border: "outline",
+                },
+                keyboardType: "phone",
+                onChanged: event "phone_changed" {
+                  value: data.phone,
+                  isValid: data.isValid,
+                },
+              ),
+            ),
+          ],
+        ),
+        switch data.isValid {
+          true: Padding(
+            padding: [0.0, 8.0, 0.0, 0.0],
+            child: Row(
+              mainAxisSize: "min",
+              children: [
+                Icon(icon: 0xE86C, fontFamily: "MaterialIcons", size: 16.0, color: 0xFF4CAF50),
+                SizedBox(width: 4.0),
+                Text(
+                  text: "Valid phone format",
+                  style: { fontSize: 12.0, color: 0xFF4CAF50 },
+                ),
+              ],
+            ),
+          ),
+          default: SizedBox(height: 8.0),
+        },
+        SizedBox(height: 8.0),
+        Text(
+          text: "Format: (XXX) XXX-XXXX",
+          style: { fontSize: 11.0, color: 0xFF9E9E9E },
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_clear" {
+                formId: "phone_input",
+              },
+              child: Text(
+                text: "Clear",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            switch data.isValid {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "phone_input",
+                  data: { phone: data.phone, countryCode: data.countryCode },
+                },
+                child: Text(text: "Submit"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "phone_input",
+                  reason: "invalid_phone",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Submit"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

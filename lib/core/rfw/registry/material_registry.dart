@@ -134,7 +134,10 @@ LocalWidgetLibrary createAppMaterialWidgets() {
     'TextField': (BuildContext context, DataSource source) {
       final prefixIconCode = source.v<int>(['decoration', 'prefixIcon']);
       final suffixIconCode = source.v<int>(['decoration', 'suffixIcon']);
-      return TextField(
+      final value = source.v<String>(['value']);
+
+      return _ControlledTextField(
+        initialValue: value ?? '',
         decoration: InputDecoration(
           labelText: source.v<String>(['decoration', 'labelText']),
           hintText: source.v<String>(['decoration', 'hintText']),
@@ -519,5 +522,67 @@ TextInputType _parseKeyboardType(String? type) {
       return TextInputType.multiline;
     default:
       return TextInputType.text;
+  }
+}
+
+/// A TextField that supports controlled value from host.
+/// When initialValue changes, the text field updates.
+class _ControlledTextField extends StatefulWidget {
+  final String initialValue;
+  final InputDecoration? decoration;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
+
+  const _ControlledTextField({
+    super.key,
+    required this.initialValue,
+    this.decoration,
+    this.keyboardType,
+    this.obscureText = false,
+    this.onChanged,
+    this.onSubmitted,
+  });
+
+  @override
+  State<_ControlledTextField> createState() => _ControlledTextFieldState();
+}
+
+class _ControlledTextFieldState extends State<_ControlledTextField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void didUpdateWidget(_ControlledTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Only sync from host when value is cleared (reset/clear action)
+    // Don't sync during normal typing to avoid cursor/focus issues
+    if (widget.initialValue.isEmpty && _controller.text.isNotEmpty) {
+      _controller.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      decoration: widget.decoration,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.obscureText,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
+    );
   }
 }
