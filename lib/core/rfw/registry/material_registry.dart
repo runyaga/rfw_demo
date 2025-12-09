@@ -109,17 +109,21 @@ LocalWidgetLibrary createAppMaterialWidgets() {
 
     // Switch widget (not included in createMaterialWidgets)
     'Switch': (BuildContext context, DataSource source) {
+      final activeColor = source.v<int>(['activeColor']);
+      final activeTrackColor = source.v<int>(['activeTrackColor']);
       return material.Switch(
         value: source.v<bool>(['value']) ?? false,
         onChanged: source.handler(
           ['onChanged'],
           (HandlerTrigger trigger) => (bool value) => trigger(<String, Object?>{'value': value}),
         ),
-        activeThumbColor: source.v<int>(['activeColor']) != null
-            ? Color(source.v<int>(['activeColor'])!)
+        thumbColor: activeColor != null
+            ? WidgetStateProperty.resolveWith((states) =>
+                states.contains(WidgetState.selected) ? Color(activeColor) : null)
             : null,
-        activeTrackColor: source.v<int>(['activeTrackColor']) != null
-            ? Color(source.v<int>(['activeTrackColor'])!)
+        trackColor: activeTrackColor != null
+            ? WidgetStateProperty.resolveWith((states) =>
+                states.contains(WidgetState.selected) ? Color(activeTrackColor) : null)
             : null,
       );
     },
