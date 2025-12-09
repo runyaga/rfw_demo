@@ -46,7 +46,7 @@ dependencies:
   path_provider: ^2.1.5
 
   # Map support (for Stage 9)
-  flutter_map: ^7.0.2
+  flutter_map: ^8.2.2
   latlong2: ^0.9.1
 
 dev_dependencies:
