@@ -1400,7 +1400,230 @@ Update `README.md` with CI status badges:
 
 ---
 
-## Stage 11: Contract Testing & Versioning Governance
+## Stage 11: Advanced Form Widget Composition
+
+**Objective:** Demonstrate RFW's capability for complex form handling with validation, formatting, and event-driven submission patterns.
+
+### Structure
+
+Forms are organized into 3 demo pages accessible from the main app navigation:
+
+- **Basic Forms Page** (Forms 1-5): Simple inputs with basic validation
+- **Intermediate Forms Page** (Forms 6-10): Multi-component forms with complex validation
+- **Advanced Forms Page** (Forms 11-15): Composite forms with cross-field validation
+
+### Tasks
+
+#### 11.1. Basic Forms Page (5 Forms)
+
+**Form 1: Simple Text Input**
+- Single-line text field with label and placeholder
+- Submit button, Clear button
+- Validation: None
+- Input Events:
+  - `text_changed { field: "name", value: "..." }`
+  - `field_blur { field: "name", value: "..." }`
+- Action Events:
+  - `form_submit { formId: "simple_text", data: { name: "John" } }`
+  - `form_clear { formId: "simple_text" }`
+
+**Form 2: Email Input with Validation**
+- Email field with real-time format validation, error state display
+- Submit button (disabled when invalid), Cancel button
+- Validation: Required, email format regex
+- Input Events:
+  - `email_changed { value: "...", isValid: true/false }`
+  - `validation_error { field: "email", error: "Invalid email format" }`
+- Action Events:
+  - `form_submit { formId: "email_input", data: { email: "user@example.com" }, isValid: true }`
+  - `form_cancel { formId: "email_input" }`
+
+**Form 3: Password Input with Visibility Toggle**
+- Password field with eye icon toggle, strength indicator
+- Submit button (disabled when weak), Reset button
+- Validation: Min 8 chars, uppercase, lowercase, number
+- Input Events:
+  - `password_changed { value: "...", strength: "weak|medium|strong" }`
+  - `visibility_toggled { visible: true/false }`
+- Action Events:
+  - `form_submit { formId: "password_input", data: { password: "***" }, strength: "strong" }`
+  - `form_reset { formId: "password_input" }`
+
+**Form 4: Phone Number Input with Formatting**
+- Auto-formats as user types: `(555) 123-4567`, country code selector
+- Verify button, Skip button
+- Validation: Valid length for country, numeric only
+- Input Events:
+  - `phone_changed { raw: "5551234567", formatted: "(555) 123-4567", country: "US" }`
+  - `country_changed { code: "US", dialCode: "+1" }`
+- Action Events:
+  - `form_submit { formId: "phone_input", data: { phone: "+15551234567", country: "US" } }`
+  - `form_skip { formId: "phone_input" }`
+
+**Form 5: Numeric Input with Range**
+- Number field with +/- buttons, enforces min/max bounds
+- Confirm button, Reset to Default button
+- Validation: Min 0, Max 100, step size
+- Input Events:
+  - `quantity_changed { value: 25, min: 0, max: 100 }`
+  - `bounds_exceeded { attempted: 105, clamped: 100 }`
+- Action Events:
+  - `form_submit { formId: "numeric_input", data: { quantity: 25 } }`
+  - `form_reset_default { formId: "numeric_input", defaultValue: 1 }`
+
+#### 11.2. Intermediate Forms Page (5 Forms)
+
+**Form 6: Multi-line Text Area with Character Counter**
+- Expandable text area with live char count, color change near limit
+- Post button, Save Draft button, Discard button
+- Validation: Max 500 characters
+- Input Events:
+  - `content_changed { value: "...", length: 245, remaining: 255 }`
+  - `limit_reached { maxLength: 500 }`
+- Action Events:
+  - `form_submit { formId: "textarea", data: { content: "..." }, action: "post" }`
+  - `form_save_draft { formId: "textarea", data: { content: "..." } }`
+  - `form_discard { formId: "textarea" }`
+
+**Form 7: Searchable Dropdown Select**
+- Dropdown with search/filter, selected value as chip
+- Apply button, Clear Selection button
+- Validation: Required selection
+- Input Events:
+  - `option_selected { id: "ca", label: "California", value: "CA" }`
+  - `search_changed { query: "cal", matchCount: 3 }`
+- Action Events:
+  - `form_submit { formId: "dropdown_select", data: { state: "CA", label: "California" } }`
+  - `form_clear_selection { formId: "dropdown_select" }`
+
+**Form 8: Radio Button Group with "Other" Option**
+- Vertical radio group, "Other" reveals text input
+- Continue button, Back button
+- Validation: One required, if "Other" then text required
+- Input Events:
+  - `option_selected { groupId: "contact_method", value: "email" }`
+  - `other_specified { groupId: "contact_method", customValue: "..." }`
+- Action Events:
+  - `form_submit { formId: "radio_group", data: { contactMethod: "email" } }`
+  - `form_submit { formId: "radio_group", data: { contactMethod: "other", otherValue: "Carrier Pigeon" } }`
+  - `form_back { formId: "radio_group" }`
+
+**Form 9: Checkbox Group with Min/Max Selection**
+- Multi-select with constraints: "Select 2-4 options"
+- Save Preferences button, Reset button
+- Validation: Min 2, Max 4 selections
+- Input Events:
+  - `selection_changed { groupId: "interests", selected: ["sports", "music"], count: 2 }`
+  - `selection_invalid { reason: "minimum_not_met", required: 2, actual: 1 }`
+- Action Events:
+  - `form_submit { formId: "checkbox_group", data: { interests: ["sports", "music", "travel"] } }`
+  - `form_reset { formId: "checkbox_group" }`
+
+**Form 10: Date Range Picker**
+- Start/end date fields with calendars, end >= start validation
+- Search Availability button, Clear Dates button
+- Validation: Both required, end after start
+- Input Events:
+  - `date_selected { field: "start", date: "2025-01-15" }`
+  - `range_changed { start: "2025-01-15", end: "2025-01-20", nights: 5 }`
+- Action Events:
+  - `form_submit { formId: "date_range", data: { startDate: "2025-01-15", endDate: "2025-01-20", nights: 5 } }`
+  - `form_clear_dates { formId: "date_range" }`
+
+#### 11.3. Advanced Forms Page (5 Forms)
+
+**Form 11: Rating Slider with Labels**
+- Horizontal slider 1-10 with semantic labels at key points
+- Submit Rating button, Skip button
+- Validation: Selection required
+- Input Events:
+  - `rating_changed { value: 7, label: "Very Good" }`
+- Action Events:
+  - `form_submit { formId: "rating_slider", data: { category: "service", rating: 7, label: "Very Good" } }`
+  - `form_skip { formId: "rating_slider" }`
+
+**Form 12: Autocomplete Search Field**
+- Suggestion dropdown as user types, debounced query
+- Select button (after suggestion chosen), Clear button
+- Validation: Must select from suggestions
+- Input Events:
+  - `search_typed { query: "new y", debounced: true }`
+  - `suggestion_selected { id: "nyc", label: "New York, NY" }`
+- Action Events:
+  - `form_submit { formId: "autocomplete", data: { selectedId: "nyc", label: "New York, NY" } }`
+  - `form_clear { formId: "autocomplete" }`
+
+**Form 13: Address Form (Composite)**
+- Street, City, State dropdown, ZIP with cross-validation
+- Save Address button, Use Different Address button
+- Validation: All required, ZIP format, state filters by country
+- Input Events:
+  - `field_changed { form: "address", field: "street", value: "..." }`
+  - `address_complete { street: "123 Main St", city: "Austin", state: "TX", zip: "78701" }`
+- Action Events:
+  - `form_submit { formId: "address", data: { street: "123 Main St", city: "Austin", state: "TX", zip: "78701", country: "US" } }`
+  - `form_cancel { formId: "address" }`
+  - `form_validate { formId: "address" }` - triggers ZIP code verification
+
+**Form 14: Credit Card Form (Composite)**
+- Card number (type detection), expiry MM/YY, CVV, name
+- Pay Now button, Cancel Payment button
+- Validation: Luhn algorithm, expiry not past, CVV length by type
+- Input Events:
+  - `card_number_changed { masked: "•••• 4242", type: "visa", isValid: true }`
+  - `card_form_valid { cardType: "visa", last4: "4242", isComplete: true }`
+- Action Events:
+  - `form_submit { formId: "credit_card", data: { cardType: "visa", last4: "4242", expiryMonth: "12", expiryYear: "2026", nameOnCard: "John Doe" } }`
+  - `form_cancel { formId: "credit_card" }`
+
+**Form 15: Complete Registration Form**
+- Multi-section: Personal Info, Account Setup, Preferences
+- Progress indicator, per-section validation, final submission
+- Sections:
+  1. Personal: First/Last name, DOB, Phone
+  2. Account: Email, Password, Confirm Password
+  3. Preferences: Newsletter, Contact method, Interests
+- Section Buttons: Next (validates section), Back (returns to previous)
+- Final Buttons: Create Account, Start Over
+- Input Events:
+  - `section_changed { from: "personal", to: "account" }`
+  - `section_validated { section: "personal", isValid: true }`
+- Action Events:
+  - `form_next_section { formId: "registration", currentSection: "personal", nextSection: "account" }`
+  - `form_prev_section { formId: "registration", currentSection: "account", prevSection: "personal" }`
+  - `form_submit { formId: "registration", data: { personal: {...}, account: {...}, preferences: {...} } }`
+  - `form_start_over { formId: "registration" }`
+  - `submission_success { formId: "registration", userId: "..." }`
+  - `submission_error { formId: "registration", errors: ["Email already exists"] }`
+
+#### 11.4. Create Demo Pages
+
+Files to create:
+- `lib/features/forms_basic/` - Basic forms demo page
+- `lib/features/forms_intermediate/` - Intermediate forms demo page
+- `lib/features/forms_advanced/` - Advanced forms demo page
+- `assets/rfw/source/forms/` - RFW widget definitions for all 15 forms
+
+#### 11.5. Wire Navigation
+
+- Add "Forms" section to main app navigation
+- Sub-navigation to Basic, Intermediate, Advanced pages
+
+### Gate 11: Form Widget Verification
+
+| Criteria | Validation Method |
+|----------|-------------------|
+| All 15 forms render correctly | Visual inspection + widget tests |
+| Validation displays error states | Test invalid input scenarios |
+| Events fire with correct payloads | Event capture tests |
+| Forms work in web build | Test on GitHub Pages |
+| Navigation between form pages works | Manual verification |
+
+**Exit Condition:** All 15 form widgets functional with validation and events.
+
+---
+
+## Stage 12: Contract Testing & Versioning Governance
 
 **Objective:** Prevent contract drift between client and server.
 
@@ -1408,7 +1631,7 @@ Update `README.md` with CI status badges:
 
 ### Tasks
 
-11.1. Implement Contract Tests:
+12.1. Implement Contract Tests:
 ```dart
 // test/rfw/contracts/data_contract_test.dart
 void main() {
@@ -1428,23 +1651,23 @@ void main() {
 }
 ```
 
-11.2. Create edge-case data generator:
+12.2. Create edge-case data generator:
 - Generate nulls, empty lists, missing fields
 - Generate type mismatches (String where Map expected)
 
-11.3. Define version negotiation protocol:
+12.3. Define version negotiation protocol:
 - Document server response codes for version mismatch
 - Implement client handling of "please update" responses
 
-11.4. Implement graceful degradation:
+12.4. Implement graceful degradation:
 - Unknown widget type renders placeholder
 - Malformed data shows error state (not crash)
 
-11.5. Set up server-side version routing (documentation/spec):
+12.5. Set up server-side version routing (documentation/spec):
 - Document how server should serve older `.rfw` for older clients
 - Define version compatibility matrix
 
-### Gate 11: Contract Verification
+### Gate 12: Contract Verification
 
 | Criteria | Validation Method |
 |----------|-------------------|
@@ -1458,7 +1681,7 @@ void main() {
 
 ---
 
-## Stage 12: Production Hardening
+## Stage 13: Production Hardening
 
 **Objective:** Address performance, security, and error handling for production deployment.
 
@@ -1466,16 +1689,16 @@ void main() {
 
 ### Tasks
 
-12.1. Performance optimization:
+13.1. Performance optimization:
 - Verify all production delivery uses binary `.rfw` (not `.rfwtxt`)
 - Measure parsing performance, target 10x improvement over text
 - Optimize DynamicContent transformation (avoid unnecessary copies)
 
-12.2. Address prop drilling (DESIGN.md Section 7.2):
+13.2. Address prop drilling (DESIGN.md Section 7.2):
 - Flatten DynamicContent where appropriate
 - Consider global data keys for deeply nested access
 
-12.3. Implement Circuit Breaker for rendering (DESIGN.md Section 7.4):
+13.3. Implement Circuit Breaker for rendering (DESIGN.md Section 7.4):
 ```dart
 Widget buildSafeRemoteWidget() {
   try {
@@ -1488,21 +1711,21 @@ Widget buildSafeRemoteWidget() {
 }
 ```
 
-12.4. Security hardening:
+13.4. Security hardening:
 - Implement widget tree depth limit
 - Add timeout for remote widget rendering
 - Validate server response signatures if applicable
 
-12.5. Error monitoring integration:
+13.5. Error monitoring integration:
 - Report RFW rendering failures to crash reporting service
 - Include widget ID, version, and DynamicContent snapshot in reports
 
-12.6. Performance monitoring:
+13.6. Performance monitoring:
 - Track widget load times
 - Track parsing times
 - Track rendering times
 
-### Gate 12: Production Readiness Verification
+### Gate 13: Production Readiness Verification
 
 | Criteria | Validation Method |
 |----------|-------------------|
@@ -1531,8 +1754,9 @@ Widget buildSafeRemoteWidget() {
 | 8 | Inventory | Full widget catalog | ✅ |
 | 9 | Extended Widgets | Accordion, Tabs, Map, DateTime, etc. | ✅ |
 | 10 | CI/CD | GitHub Actions, Pages deployment | ✅ |
-| 11 | Contract Testing | Versioning governance | |
-| 12 | Hardening | Production readiness | |
+| 11 | Form Widgets | 15 forms across 3 demo pages | |
+| 12 | Contract Testing | Versioning governance | |
+| 13 | Hardening | Production readiness | |
 
 ---
 
@@ -1550,8 +1774,9 @@ Widget buildSafeRemoteWidget() {
 | Stage 8 | Examples 8-10, 5.2 | Complex widgets and catalog |
 | Stage 9 | MOAR_WIDGETS.md | Extended widget library |
 | Stage 10 | N/A | GitHub CI/CD and Pages deployment |
-| Stage 11 | 5.1, 6.2 | Versioning and contract tests |
-| Stage 12 | 7.1-7.4 | Problem identification mitigations |
+| Stage 11 | N/A | Advanced form widget composition |
+| Stage 12 | 5.1, 6.2 | Versioning and contract tests |
+| Stage 13 | 7.1-7.4 | Problem identification mitigations |
 
 ---
 
