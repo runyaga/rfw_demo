@@ -6,7 +6,7 @@ Guidance for Claude Code when working with this repository.
 
 Remote Flutter Widgets (RFW) implementation spike. Server-driven UI architecture enabling OTA widget updates without app store releases.
 
-**Status:** Stages 1-8 complete, Stage 9 in progress (of 10), 114 tests passing.
+**Status:** Stages 1-9 complete, Stage 10 next (of 12), 139 tests passing.
 
 ## Common Commands
 

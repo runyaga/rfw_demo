@@ -1,16 +1,23 @@
 # RFW Spike
 
+[![CI](https://github.com/runyaga/rfw_spike/actions/workflows/ci.yml/badge.svg)](https://github.com/runyaga/rfw_spike/actions/workflows/ci.yml)
+[![Deploy](https://github.com/runyaga/rfw_spike/actions/workflows/deploy.yml/badge.svg)](https://github.com/runyaga/rfw_spike/actions/workflows/deploy.yml)
+
+**[Live Demo](https://runyaga.github.io/rfw_spike/)**
+
 Remote Flutter Widgets (RFW) implementation spike. Server-driven UI architecture enabling OTA widget updates.
 
 ## Status
 
-**Stages:** 9 of 10 complete | **Tests:** 139 passing
+**Stages:** 9 of 12 complete | **Tests:** 139 passing
 
 | Stage | Description | Status |
 |-------|-------------|--------|
 | 1-8 | Foundation through Widget Inventory | ✅ |
 | 9 | Extended Widget Library | ✅ |
-| 10 | Contract Testing | Pending |
+| 10 | CI/CD & GitHub Pages | In Progress |
+| 11 | Contract Testing | Pending |
+| 12 | Production Hardening | Pending |
 
 ## Quick Start
 

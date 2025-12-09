@@ -125,7 +125,7 @@ void main() {
       content.update('longitude', -122.4194);
       content.update('zoom', 13.0);
 
-      String? eventName;
+      final events = <String>[];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -138,7 +138,7 @@ void main() {
                 'LocationPickerMap',
               ),
               onEvent: (name, args) {
-                eventName = name;
+                events.add(name);
               },
             ),
           ),
@@ -152,6 +152,8 @@ void main() {
 
       // Note: Testing actual map tap events is complex due to gesture handling
       // We verify the widget renders and accepts the enableTapToSelect parameter
+      // Events list is available if tap simulation is added later
+      expect(events, isEmpty); // No events fired without user interaction
     });
 
     testWidgets('MapCard renders with title in card layout', (tester) async {
@@ -370,7 +372,7 @@ void main() {
       runtime.update(const LibraryName(<String>['map']), createMapWidgets());
 
       // Create a simple RFW widget that uses FlutterMap
-      final source = '''
+      const source = '''
 import core;
 import material;
 import map;
@@ -421,7 +423,7 @@ widget TestMap = SizedBox(
       runtime.update(const LibraryName(<String>['map']), createMapWidgets());
 
       // Create a simple RFW widget that uses FlutterMap with markers
-      final source = '''
+      const source = '''
 import core;
 import material;
 import map;

@@ -1148,7 +1148,254 @@ File: `test/rfw/widgets_extended/`
 
 ---
 
-## Stage 10: Contract Testing & Versioning Governance
+## Stage 10: GitHub CI/CD & Web Deployment
+
+**Objective:** Establish continuous integration pipeline with automated testing, static analysis, and deploy the Flutter web app to GitHub Pages for public demonstration.
+
+### Tasks
+
+#### 10.1. Create GitHub Actions CI Workflow
+
+File: `.github/workflows/ci.yml`
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  analyze:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build web --release --base-href "/rfw_spike/"
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+```
+
+#### 10.2. Create GitHub Pages Deployment Workflow
+
+File: `.github/workflows/deploy.yml`
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build web --release --base-href "/rfw_spike/"
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+#### 10.3. Add CI Best Practices
+
+**Dependabot Configuration:**
+
+File: `.github/dependabot.yml`
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+**Branch Protection Rules (Manual Setup):**
+- Require status checks to pass before merging
+- Require branches to be up to date before merging
+- Required checks: `analyze`, `test`, `build-web`
+
+#### 10.4. Add Code Quality Tooling
+
+**Analysis Options Enhancement:**
+
+File: `analysis_options.yaml` (update existing)
+
+```yaml
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    invalid_annotation_target: ignore
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_empty_else
+    - avoid_print
+    - avoid_relative_lib_imports
+    - avoid_returning_null_for_future
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_types_as_parameter_names
+    - avoid_web_libraries_in_flutter
+    - cancel_subscriptions
+    - close_sinks
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_fields
+    - prefer_final_locals
+    - require_trailing_commas
+    - sort_child_properties_last
+    - unawaited_futures
+    - unnecessary_await_in_return
+    - use_key_in_widget_constructors
+```
+
+#### 10.5. Configure RFW Compilation Check
+
+Add to CI to ensure `.rfw` binaries are up-to-date:
+
+```yaml
+  verify-rfw:
+    name: Verify RFW Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: dart run tool/compile_rfw.dart
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain assets/rfw/defaults/) ]]; then
+            echo "Error: RFW binaries are out of date. Run 'dart run tool/compile_rfw.dart' and commit."
+            git diff assets/rfw/defaults/
+            exit 1
+          fi
+```
+
+#### 10.6. Add README Badges
+
+Update `README.md` with CI status badges:
+
+```markdown
+# RFW Spike
+
+[![CI](https://github.com/USERNAME/rfw_spike/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/rfw_spike/actions/workflows/ci.yml)
+[![Deploy](https://github.com/USERNAME/rfw_spike/actions/workflows/deploy.yml/badge.svg)](https://github.com/USERNAME/rfw_spike/actions/workflows/deploy.yml)
+
+**[Live Demo](https://USERNAME.github.io/rfw_spike/)**
+```
+
+#### 10.7. Enable GitHub Pages
+
+**Manual Steps:**
+1. Go to repository Settings → Pages
+2. Set Source to "GitHub Actions"
+3. The deploy workflow will handle the rest
+
+### Gate 10: CI/CD Verification
+
+| Criteria | Validation Method |
+|----------|-------------------|
+| CI workflow runs on push/PR | Push to branch, verify Actions tab |
+| `flutter analyze` passes in CI | Green check on analyze job |
+| `flutter test` passes in CI | Green check on test job |
+| Web build succeeds in CI | Green check on build-web job |
+| RFW compilation check passes | Green check on verify-rfw job |
+| GitHub Pages deployment succeeds | Visit deployed URL |
+| Web app loads and functions | Manual verification of live demo |
+| Dependabot creates PRs for updates | Check Dependabot tab |
+| README shows CI badges | Visual inspection |
+
+**Exit Condition:** CI pipeline operational; web demo publicly accessible at GitHub Pages URL.
+
+---
+
+## Stage 11: Contract Testing & Versioning Governance
 
 **Objective:** Prevent contract drift between client and server.
 
@@ -1156,7 +1403,7 @@ File: `test/rfw/widgets_extended/`
 
 ### Tasks
 
-10.1. Implement Contract Tests:
+11.1. Implement Contract Tests:
 ```dart
 // test/rfw/contracts/data_contract_test.dart
 void main() {
@@ -1176,23 +1423,23 @@ void main() {
 }
 ```
 
-10.2. Create edge-case data generator:
+11.2. Create edge-case data generator:
 - Generate nulls, empty lists, missing fields
 - Generate type mismatches (String where Map expected)
 
-10.3. Define version negotiation protocol:
+11.3. Define version negotiation protocol:
 - Document server response codes for version mismatch
 - Implement client handling of "please update" responses
 
-10.4. Implement graceful degradation:
+11.4. Implement graceful degradation:
 - Unknown widget type renders placeholder
 - Malformed data shows error state (not crash)
 
-10.5. Set up server-side version routing (documentation/spec):
+11.5. Set up server-side version routing (documentation/spec):
 - Document how server should serve older `.rfw` for older clients
 - Define version compatibility matrix
 
-### Gate 10: Contract Verification
+### Gate 11: Contract Verification
 
 | Criteria | Validation Method |
 |----------|-------------------|
@@ -1206,7 +1453,7 @@ void main() {
 
 ---
 
-## Stage 11: Production Hardening
+## Stage 12: Production Hardening
 
 **Objective:** Address performance, security, and error handling for production deployment.
 
@@ -1214,16 +1461,16 @@ void main() {
 
 ### Tasks
 
-11.1. Performance optimization:
+12.1. Performance optimization:
 - Verify all production delivery uses binary `.rfw` (not `.rfwtxt`)
 - Measure parsing performance, target 10x improvement over text
 - Optimize DynamicContent transformation (avoid unnecessary copies)
 
-11.2. Address prop drilling (DESIGN.md Section 7.2):
+12.2. Address prop drilling (DESIGN.md Section 7.2):
 - Flatten DynamicContent where appropriate
 - Consider global data keys for deeply nested access
 
-11.3. Implement Circuit Breaker for rendering (DESIGN.md Section 7.4):
+12.3. Implement Circuit Breaker for rendering (DESIGN.md Section 7.4):
 ```dart
 Widget buildSafeRemoteWidget() {
   try {
@@ -1236,21 +1483,21 @@ Widget buildSafeRemoteWidget() {
 }
 ```
 
-11.4. Security hardening:
+12.4. Security hardening:
 - Implement widget tree depth limit
 - Add timeout for remote widget rendering
 - Validate server response signatures if applicable
 
-11.5. Error monitoring integration:
+12.5. Error monitoring integration:
 - Report RFW rendering failures to crash reporting service
 - Include widget ID, version, and DynamicContent snapshot in reports
 
-11.6. Performance monitoring:
+12.6. Performance monitoring:
 - Track widget load times
 - Track parsing times
 - Track rendering times
 
-### Gate 11: Production Readiness Verification
+### Gate 12: Production Readiness Verification
 
 | Criteria | Validation Method |
 |----------|-------------------|
@@ -1267,18 +1514,20 @@ Widget buildSafeRemoteWidget() {
 
 ## Implementation Summary
 
-| Stage | Objective | Key Deliverable |
-|-------|-----------|-----------------|
-| 1 | Foundation | Directory structure, dependencies |
-| 2 | Core Registry | LocalWidgetLibrary, Runtime |
-| 3 | Offline-First | Bundled asset rendering |
-| 4 | Testing | Golden test infrastructure |
-| 5 | Data Binding | DynamicContent integration |
-| 6 | Events | Bidirectional communication |
-| 7 | Network | OTA widget updates |
-| 8 | Inventory | Full widget catalog |
-| 9 | Governance | Contract testing, versioning |
-| 10 | Hardening | Production readiness |
+| Stage | Objective | Key Deliverable | Status |
+|-------|-----------|-----------------|--------|
+| 1 | Foundation | Directory structure, dependencies | ✅ |
+| 2 | Core Registry | LocalWidgetLibrary, Runtime | ✅ |
+| 3 | Offline-First | Bundled asset rendering | ✅ |
+| 4 | Testing | Golden test infrastructure | ✅ |
+| 5 | Data Binding | DynamicContent integration | ✅ |
+| 6 | Events | Bidirectional communication | ✅ |
+| 7 | Network | OTA widget updates | ✅ |
+| 8 | Inventory | Full widget catalog | ✅ |
+| 9 | Extended Widgets | Accordion, Tabs, Map, DateTime, etc. | ✅ |
+| 10 | CI/CD | GitHub Actions, Pages deployment | |
+| 11 | Contract Testing | Versioning governance | |
+| 12 | Hardening | Production readiness | |
 
 ---
 
@@ -1294,8 +1543,10 @@ Widget buildSafeRemoteWidget() {
 | Stage 6 | 3.3.2 | Event handler pattern from design |
 | Stage 7 | 3.4 | Network layer per Phase 4 |
 | Stage 8 | Examples 8-10, 5.2 | Complex widgets and catalog |
-| Stage 9 | 5.1, 6.2 | Versioning and contract tests |
-| Stage 10 | 7.1-7.4 | Problem identification mitigations |
+| Stage 9 | MOAR_WIDGETS.md | Extended widget library |
+| Stage 10 | N/A | GitHub CI/CD and Pages deployment |
+| Stage 11 | 5.1, 6.2 | Versioning and contract tests |
+| Stage 12 | 7.1-7.4 | Problem identification mitigations |
 
 ---
 

@@ -528,7 +528,7 @@ void main() {
       runtime.update(const LibraryName(<String>['material']), createAppMaterialWidgets());
 
       // Create a simple RFW widget that uses DateTimePicker
-      final source = '''
+      const source = '''
 import core;
 import material;
 

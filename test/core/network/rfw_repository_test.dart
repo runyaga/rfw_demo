@@ -329,7 +329,7 @@ void main() {
         final cachedData = Uint8List.fromList([1, 2, 3, 4]);
         var callbackCalled = false;
 
-        repository.onWidgetUpdated = (_, __) {
+        repository.onWidgetUpdated = (widgetId, data) {
           callbackCalled = true;
         };
 

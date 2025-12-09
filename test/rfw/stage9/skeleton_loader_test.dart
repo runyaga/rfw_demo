@@ -98,7 +98,7 @@ void main() {
       // Test that SkeletonBlock uses args properly
       // We need to call it from a parent widget that passes the args
 
-      final source = '''
+      const source = '''
 import core;
 import material;
 import skeleton_loader;
@@ -140,7 +140,7 @@ widget TestWrapper = SkeletonBlock(height: 100.0, width: 200.0);
 
       // Find the one with our expected color (0xFFBDBDBD = gray)
       final grayColoredBox = find.byWidgetPredicate((widget) =>
-          widget is ColoredBox && widget.color.value == 0xFFBDBDBD);
+          widget is ColoredBox && widget.color.toARGB32() == 0xFFBDBDBD);
       expect(grayColoredBox, findsOneWidget);
 
       // The ColoredBox should have the specified dimensions via its child SizedBox
