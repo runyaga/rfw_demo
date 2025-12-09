@@ -1,0 +1,359 @@
+// Form 12: Autocomplete Search Field (Multi-select up to 3)
+// Text input with suggestion dropdown as user types.
+// Allows selecting up to 3 cities from suggestions.
+// Validation: Must select at least 1 city from suggestions.
+//
+// Events fired:
+// - 'search_typed' with { formId: String, query: String }
+// - 'suggestion_selected' with { formId: String, id: String, label: String }
+// - 'selection_removed' with { formId: String, id: String }
+// - 'form_submit' with { formId: String, data: { selectedCities: [...] } }
+// - 'form_clear' with { formId: String }
+
+import core;
+import material;
+
+// Individual suggestion item
+widget SuggestionItem = InkWell(
+  onTap: event "suggestion_selected" {
+    formId: "autocomplete",
+    id: args.id,
+    label: args.label,
+  },
+  child: Padding(
+    padding: [16.0, 12.0, 16.0, 12.0],
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        Icon(icon: 0xE8B6, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF757575),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: "start",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: args.label,
+                style: {
+                  fontSize: 16.0,
+                  color: 0xFF212121,
+                },
+              ),
+              switch args.subtitle {
+                "": SizedBox(height: 0.0),
+                default: Text(
+                  text: args.subtitle,
+                  style: {
+                    fontSize: 12.0,
+                    color: 0xFF757575,
+                  },
+                ),
+              },
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+// Selected city chip
+widget SelectedChip = ClipRRect(
+  borderRadius: [16.0],
+  child: ColoredBox(
+    color: 0xFFE3F2FD,
+    child: Padding(
+      padding: [12.0, 6.0, 8.0, 6.0],
+      child: Row(
+        mainAxisSize: "min",
+        children: [
+          Text(
+            text: args.label,
+            style: { fontSize: 14.0, color: 0xFF1976D2 },
+          ),
+          SizedBox(width: 4.0),
+          InkWell(
+            onTap: event "selection_removed" {
+              formId: "autocomplete",
+              id: args.id,
+            },
+            child: Icon(icon: 0xE5CD, fontFamily: "MaterialIcons", size: 18.0, color: 0xFF1976D2),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
+
+widget AutocompleteForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Search for Cities",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Row(
+          mainAxisSize: "min",
+          children: [
+            Expanded(
+              child: Text(
+                text: "Select up to 3 cities from suggestions",
+                style: {
+                  fontSize: 14.0,
+                  color: 0xFF757575,
+                },
+              ),
+            ),
+            ClipRRect(
+              borderRadius: [12.0],
+              child: ColoredBox(
+                color: data.selectionCountColor,
+                child: Padding(
+                  padding: [8.0, 4.0, 8.0, 4.0],
+                  child: Text(
+                    text: data.selectionCountDisplay,
+                    style: { fontSize: 12.0, color: 0xFFFFFFFF, fontWeight: "bold" },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        // Selected cities display
+        switch data.hasSelections {
+          true: Padding(
+            padding: [0.0, 0.0, 0.0, 12.0],
+            child: Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: [
+                switch data.hasSelection1 {
+                  true: SelectedChip(id: data.selected1Id, label: data.selected1Label),
+                  default: SizedBox(width: 0.0),
+                },
+                switch data.hasSelection2 {
+                  true: SelectedChip(id: data.selected2Id, label: data.selected2Label),
+                  default: SizedBox(width: 0.0),
+                },
+                switch data.hasSelection3 {
+                  true: SelectedChip(id: data.selected3Id, label: data.selected3Label),
+                  default: SizedBox(width: 0.0),
+                },
+              ],
+            ),
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Search input (hidden when 3 selected)
+        switch data.canAddMore {
+          true: TextField(
+            value: data.searchQuery,
+            decoration: {
+              labelText: "City name",
+              hintText: "Start typing to search...",
+              border: "outline",
+              prefixIcon: 0xE8B6,
+            },
+            onChanged: event "search_typed" {
+              formId: "autocomplete",
+              query: data.searchQuery,
+            },
+          ),
+          default: ClipRRect(
+            borderRadius: [8.0],
+            child: ColoredBox(
+              color: 0xFFF5F5F5,
+              child: Padding(
+                padding: [16.0, 12.0, 16.0, 12.0],
+                child: Row(
+                  mainAxisSize: "min",
+                  children: [
+                    Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF4CAF50),
+                    SizedBox(width: 8.0),
+                    Text(
+                      text: "Maximum 3 cities selected",
+                      style: { fontSize: 14.0, color: 0xFF757575 },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        },
+        // Suggestions list
+        switch data.showSuggestions {
+          true: Padding(
+            padding: [0.0, 8.0, 0.0, 0.0],
+            child: ClipRRect(
+              borderRadius: [8.0],
+              child: ColoredBox(
+                color: 0xFFFAFAFA,
+                child: Column(
+                  crossAxisAlignment: "stretch",
+                  mainAxisSize: "min",
+                  children: [
+                    Padding(
+                      padding: [12.0, 8.0, 12.0, 4.0],
+                      child: Text(
+                        text: data.suggestionsHeader,
+                        style: { fontSize: 12.0, color: 0xFF9E9E9E },
+                      ),
+                    ),
+                    switch data.hasSuggestion1 {
+                      true: SuggestionItem(
+                        id: data.suggestion1Id,
+                        label: data.suggestion1Label,
+                        subtitle: data.suggestion1Subtitle,
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                    switch data.hasSuggestion2 {
+                      true: Column(
+                        mainAxisSize: "min",
+                        children: [
+                          Divider(height: 1.0, color: 0xFFE0E0E0),
+                          SuggestionItem(
+                            id: data.suggestion2Id,
+                            label: data.suggestion2Label,
+                            subtitle: data.suggestion2Subtitle,
+                          ),
+                        ],
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                    switch data.hasSuggestion3 {
+                      true: Column(
+                        mainAxisSize: "min",
+                        children: [
+                          Divider(height: 1.0, color: 0xFFE0E0E0),
+                          SuggestionItem(
+                            id: data.suggestion3Id,
+                            label: data.suggestion3Label,
+                            subtitle: data.suggestion3Subtitle,
+                          ),
+                        ],
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                    switch data.hasSuggestion4 {
+                      true: Column(
+                        mainAxisSize: "min",
+                        children: [
+                          Divider(height: 1.0, color: 0xFFE0E0E0),
+                          SuggestionItem(
+                            id: data.suggestion4Id,
+                            label: data.suggestion4Label,
+                            subtitle: data.suggestion4Subtitle,
+                          ),
+                        ],
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                    switch data.hasSuggestion5 {
+                      true: Column(
+                        mainAxisSize: "min",
+                        children: [
+                          Divider(height: 1.0, color: 0xFFE0E0E0),
+                          SuggestionItem(
+                            id: data.suggestion5Id,
+                            label: data.suggestion5Label,
+                            subtitle: data.suggestion5Subtitle,
+                          ),
+                        ],
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                    // No results message
+                    switch data.noResults {
+                      true: Padding(
+                        padding: [16.0, 12.0, 16.0, 12.0],
+                        child: Text(
+                          text: "No cities found matching your search",
+                          style: { fontSize: 14.0, color: 0xFF757575, fontStyle: "italic" },
+                        ),
+                      ),
+                      default: SizedBox(height: 0.0),
+                    },
+                  ],
+                ),
+              ),
+            ),
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Validation error
+        switch data.validationError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 12.0, 0.0, 0.0],
+            child: Row(
+              mainAxisSize: "min",
+              children: [
+                Icon(icon: 0xE002, fontFamily: "MaterialIcons", size: 16.0, color: 0xFFF44336),
+                SizedBox(width: 4.0),
+                Text(
+                  text: data.validationError,
+                  style: {
+                    fontSize: 12.0,
+                    color: 0xFFF44336,
+                  },
+                ),
+              ],
+            ),
+          ),
+        },
+        SizedBox(height: 16.0),
+        // Buttons
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_clear" {
+                formId: "autocomplete",
+              },
+              child: Text(
+                text: "Clear All",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            switch data.hasSelections {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "autocomplete",
+                  data: {
+                    selectedCities: data.selectedCitiesSummary,
+                  },
+                },
+                child: Text(text: data.submitButtonText),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "autocomplete",
+                  reason: "no_selection",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Select Cities"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

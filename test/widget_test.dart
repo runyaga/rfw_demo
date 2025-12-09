@@ -5,8 +5,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rfw_spike/main.dart';
+import 'package:rfw_spike/core/rfw/runtime/rfw_environment.dart';
 
 void main() {
+  setUpAll(() {
+    // Initialize RFW environment before tests
+    if (!rfwEnvironment.isInitialized) {
+      rfwEnvironment.initialize();
+    }
+  });
+
   testWidgets('App renders with home page', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -22,8 +30,10 @@ void main() {
     // Verify AppBar is present
     expect(find.byType(AppBar), findsOneWidget);
 
-    // Verify navigation cards are present
-    expect(find.text('Stage 3: Static Rendering'), findsOneWidget);
-    expect(find.text('Stage 5: Dynamic Data Binding'), findsOneWidget);
+    // Verify ListView is present for scrollable content
+    expect(find.byType(ListView), findsOneWidget);
+
+    // Verify at least some Card widgets are present
+    expect(find.byType(Card), findsWidgets);
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/rfw/runtime/rfw_environment.dart';
+import 'features/about/presentation/about_page.dart';
 import 'features/demo/presentation/demo_page.dart';
 import 'features/events/presentation/events_demo_page.dart';
 import 'features/inventory/presentation/inventory_demo_page.dart';
@@ -10,6 +11,7 @@ import 'features/remote_view/remote_view.dart';
 import 'features/widgets_extended/presentation/extended_widgets_demo_page.dart';
 import 'features/forms_basic/presentation/basic_forms_page.dart';
 import 'features/forms_intermediate/presentation/intermediate_forms_page.dart';
+import 'features/forms_advanced/presentation/advanced_forms_page.dart';
 
 void main() {
   // Initialize RFW environment before running the app
@@ -51,9 +53,28 @@ class HomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // About card - styled differently as it's static content
+          _AboutCard(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutPage()),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Experiments',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 3: Static Rendering',
-            description: 'Hello World remote widget from bundled asset',
+            bullets: const [
+              'Load compiled .rfw from bundled assets',
+              'Render basic "Hello World" remote widget',
+              'Verify RFW runtime initialization',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const Stage3Page()),
@@ -62,7 +83,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 5: Dynamic Data Binding',
-            description: 'InfoCard, StatusBadge with Riverpod state',
+            bullets: const [
+              'Bind Riverpod state to DynamicContent',
+              'InfoCard with live-updating metrics',
+              'StatusBadge with conditional styling',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DemoPage()),
@@ -71,7 +96,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 6: Event System',
-            description: 'ActionButton, FeatureToggle, EmailInput with events',
+            bullets: const [
+              'Button press events with arguments',
+              'Toggle switch state round-trip',
+              'Text input with debounced events',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const EventsDemoPage()),
@@ -80,7 +109,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 7: Network & Caching',
-            description: 'Load widgets from network with fallback chain',
+            bullets: const [
+              'Fetch widgets from remote server',
+              'Cache with TTL and ETag support',
+              'Fallback chain: cache -> network -> bundled',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const NetworkDemoPage()),
@@ -89,7 +122,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 8: Widget Inventory',
-            description: 'ProductCard, Feed items, MetricCard, OfferBanner',
+            bullets: const [
+              'ProductCard, FeedItem, MetricCard components',
+              'OfferBanner with gradients and CTAs',
+              'Reusable widget composition patterns',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const InventoryDemoPage()),
@@ -98,7 +135,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 9: Extended Widgets',
-            description: 'Accordion, Tabs, Breadcrumbs, Dropdown, Map, etc.',
+            bullets: const [
+              'Accordion, Tabs, Breadcrumbs navigation',
+              'DropdownMenu with selection handling',
+              'Interactive map with markers',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ExtendedWidgetsDemoPage()),
@@ -107,7 +148,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 11: Basic Forms',
-            description: 'Text, email, password, phone, numeric inputs',
+            bullets: const [
+              'Text, email, password field validation',
+              'Phone input with country code formatting',
+              'Numeric stepper with min/max constraints',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const BasicFormsPage()),
@@ -116,10 +161,27 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _NavCard(
             title: 'Stage 11: Intermediate Forms',
-            description: 'Textarea, dropdown, radio, checkbox, date range',
+            bullets: const [
+              'Multi-line textarea with character count',
+              'Radio groups and checkbox groups',
+              'Date range picker with validation',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const IntermediateFormsPage()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _NavCard(
+            title: 'Stage 11: Advanced Forms',
+            bullets: const [
+              'Rating slider (1-10) with semantic labels',
+              'Autocomplete search with multi-select (up to 3)',
+              'Composite address form with cross-validation',
+            ],
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AdvancedFormsPage()),
             ),
           ),
         ],
@@ -128,25 +190,138 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class _AboutCard extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AboutCard({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'About This Spike',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '\u2022 What is Remote Flutter Widgets (RFW)?\n'
+                      '\u2022 Why server-driven UI is harder in Dart\n'
+                      '\u2022 Pros, cons, and ideal use cases',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NavCard extends StatelessWidget {
   final String title;
-  final String description;
+  final List<String> bullets;
   final VoidCallback onTap;
 
   const _NavCard({
     required this.title,
-    required this.description,
+    required this.bullets,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-        trailing: const Icon(Icons.chevron_right),
+      child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...bullets.map((bullet) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('  \u2022 ', style: TextStyle(color: Colors.grey)),
+                          Expanded(
+                            child: Text(
+                              bullet,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
       ),
     );
   }

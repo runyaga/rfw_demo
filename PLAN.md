@@ -8,7 +8,7 @@ This document provides the current implementation plan for Remote Flutter Widget
 
 **Goal:** Implement a production-ready RFW architecture that enables server-driven UI while maintaining application stability.
 
-**Current Status:** Stages 1-10 complete, Stage 11 in progress (10 of 15 forms complete), 135 tests passing.
+**Current Status:** Stages 1-10 complete, Stage 11 in progress (13 of 15 forms complete), 135 tests passing.
 
 **Reference Architecture:** Three-layer model (DESIGN.md Section 2.1)
 - Data Layer: Fetching and caching .rfw binaries
@@ -45,10 +45,10 @@ Forms are organized into 3 demo pages accessible from the main app navigation:
 - ✅ Form 9: Checkbox Group with Min/Max Selection
 - ✅ Form 10: Date Range Picker
 
-**Advanced Forms (11-15)** - TODO
-- Form 11: Rating Slider with Labels
-- Form 12: Autocomplete Search Field
-- Form 13: Address Form (Composite)
+**Advanced Forms (11-15)** - IN PROGRESS
+- ✅ Form 11: Rating Slider with Labels
+- ✅ Form 12: Autocomplete Search Field (multi-select up to 3)
+- ✅ Form 13: Address Form (Composite)
 - Form 14: Credit Card Form (Composite)
 - Form 15: Complete Registration Form (Multi-section)
 
@@ -110,6 +110,9 @@ Forms are organized into 3 demo pages accessible from the main app navigation:
 - Pass status colors as integers from host rather than using switch expressions on strings
 - Multiline TextField: add `maxLines` support to `_ControlledTextField`, use Shift+Enter for newlines
 - TextField onChanged events send `{value: "text"}` - handler must read `args['value']`, not custom field names
+- Slider widget is not registered in RFW - implement using tappable InkWell buttons in a Row
+- RFW DSL doesn't support `null` literals - use empty string `""` with switch statements instead
+- For dropdowns without native RFW support, use InkWell + styled Container to mimic TextField appearance, open native Flutter bottom sheet for selection
 
 ### Gate 11: Form Widget Verification
 
@@ -209,7 +212,7 @@ Forms are organized into 3 demo pages accessible from the main app navigation:
 | Stage | Objective | Key Deliverable | Status |
 |-------|-----------|-----------------|--------|
 | 1-10 | Foundation through CI/CD | See COMPLETED_PLAN.md | ✅ |
-| 11 | Form Widgets | 15 forms across 3 demo pages | 🔄 10/15 |
+| 11 | Form Widgets | 15 forms across 3 demo pages | 🔄 13/15 |
 | 12 | Contract Testing | Versioning governance | |
 | 13 | Hardening | Production readiness | |
 

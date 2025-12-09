@@ -1,0 +1,314 @@
+// Form 13: Address Form (Composite)
+// Multi-field address form with street, city, state dropdown, and ZIP.
+// Cross-validation: All fields required, ZIP format validation.
+//
+// Events fired:
+// - 'field_changed' with { formId: String, field: String, value: String }
+// - 'state_tap' with { formId: String } (opens state selector in host)
+// - 'form_submit' with { formId: String, data: { street, city, state, zip } }
+// - 'form_cancel' with { formId: String }
+
+import core;
+import material;
+
+widget AddressForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Row(
+          mainAxisSize: "min",
+          children: [
+            Icon(icon: 0xE55F, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF1976D2),
+            SizedBox(width: 8.0),
+            Text(
+              text: "Shipping Address",
+              style: {
+                fontSize: 18.0,
+                fontWeight: "bold",
+                color: 0xFF212121,
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Enter your delivery address",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        // Street Address
+        TextField(
+          value: data.street,
+          decoration: {
+            labelText: "Street Address",
+            hintText: "123 Main Street, Apt 4B",
+            border: "outline",
+            prefixIcon: 0xE88A,
+          },
+          onChanged: event "field_changed" {
+            formId: "address",
+            field: "street",
+          },
+        ),
+        // Street error
+        switch data.streetError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [12.0, 4.0, 0.0, 0.0],
+            child: Text(
+              text: data.streetError,
+              style: { fontSize: 12.0, color: 0xFFF44336 },
+            ),
+          ),
+        },
+        SizedBox(height: 16.0),
+        // City
+        TextField(
+          value: data.city,
+          decoration: {
+            labelText: "City",
+            hintText: "San Francisco",
+            border: "outline",
+            prefixIcon: 0xE7F1,
+          },
+          onChanged: event "field_changed" {
+            formId: "address",
+            field: "city",
+          },
+        ),
+        // City error
+        switch data.cityError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [12.0, 4.0, 0.0, 0.0],
+            child: Text(
+              text: data.cityError,
+              style: { fontSize: 12.0, color: 0xFFF44336 },
+            ),
+          ),
+        },
+        SizedBox(height: 16.0),
+        // State and ZIP Row
+        Row(
+          mainAxisSize: "min",
+          children: [
+            // State Dropdown (tappable - styled to look like TextField)
+            Expanded(
+              child: InkWell(
+                onTap: event "state_tap" {
+                  formId: "address",
+                },
+                child: ClipRRect(
+                  borderRadius: [4.0],
+                  child: ColoredBox(
+                    color: 0xFFFFFFFF,
+                    child: Container(
+                      decoration: {
+                        border: {
+                          color: data.stateBorderColor,
+                          width: 1.0,
+                        },
+                        borderRadius: [4.0],
+                      },
+                      child: Padding(
+                        padding: [12.0, 12.0, 12.0, 12.0],
+                        child: Row(
+                          mainAxisSize: "min",
+                          children: [
+                            Icon(icon: 0xE55B, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF757575),
+                            SizedBox(width: 12.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: "start",
+                                mainAxisSize: "min",
+                                children: [
+                                  Text(
+                                    text: "State",
+                                    style: { fontSize: 12.0, color: 0xFF757575 },
+                                  ),
+                                  Text(
+                                    text: data.stateDisplay,
+                                    style: {
+                                      fontSize: 16.0,
+                                      color: data.stateTextColor,
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(icon: 0xE313, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF757575),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 16.0),
+            // ZIP Code
+            SizedBox(
+              width: 120.0,
+              child: TextField(
+                value: data.zip,
+                decoration: {
+                  labelText: "ZIP",
+                  hintText: "94102",
+                  border: "outline",
+                },
+                onChanged: event "field_changed" {
+                  formId: "address",
+                  field: "zip",
+                },
+              ),
+            ),
+          ],
+        ),
+        // State/ZIP errors
+        switch data.stateError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 4.0, 0.0, 0.0],
+            child: Text(
+              text: data.stateError,
+              style: { fontSize: 12.0, color: 0xFFF44336 },
+            ),
+          ),
+        },
+        switch data.zipError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 4.0, 0.0, 0.0],
+            child: Text(
+              text: data.zipError,
+              style: { fontSize: 12.0, color: 0xFFF44336 },
+            ),
+          ),
+        },
+        // Completeness indicator
+        switch data.isComplete {
+          true: Padding(
+            padding: [0.0, 16.0, 0.0, 0.0],
+            child: ClipRRect(
+              borderRadius: [8.0],
+              child: ColoredBox(
+                color: 0xFFE8F5E9,
+                child: Padding(
+                  padding: [12.0, 8.0, 12.0, 8.0],
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF4CAF50),
+                      SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          text: "Address complete and valid",
+                          style: { fontSize: 14.0, color: 0xFF4CAF50 },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        // Validation summary
+        switch data.validationSummary {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 16.0, 0.0, 0.0],
+            child: ClipRRect(
+              borderRadius: [8.0],
+              child: ColoredBox(
+                color: 0xFFFFEBEE,
+                child: Padding(
+                  padding: [12.0, 8.0, 12.0, 8.0],
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE002, fontFamily: "MaterialIcons", size: 20.0, color: 0xFFF44336),
+                      SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          text: data.validationSummary,
+                          style: { fontSize: 14.0, color: 0xFFF44336 },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        },
+        SizedBox(height: 20.0),
+        // Buttons
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_cancel" {
+                formId: "address",
+              },
+              child: Text(
+                text: "Use Different Address",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            switch data.isValid {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "address",
+                  data: {
+                    street: data.street,
+                    city: data.city,
+                    state: data.stateValue,
+                    stateLabel: data.stateLabel,
+                    zip: data.zip,
+                  },
+                },
+                child: Row(
+                  mainAxisSize: "min",
+                  children: [
+                    Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                    SizedBox(width: 8.0),
+                    Text(text: "Save Address"),
+                  ],
+                ),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "address",
+                  reason: "incomplete",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Row(
+                  mainAxisSize: "min",
+                  children: [
+                    Icon(icon: 0xE876, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF),
+                    SizedBox(width: 8.0),
+                    Text(text: "Save Address"),
+                  ],
+                ),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

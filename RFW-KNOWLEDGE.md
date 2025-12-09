@@ -164,6 +164,7 @@ RFW's `createMaterialWidgets()` does NOT include many common widgets. We add the
 - `ExpansionTile` - Added in Stage 9
 - `DropdownMenu` - Added in Stage 9
 - `BottomNavigationBar` - Added in Stage 9
+- `Slider` - Not registered (use tappable buttons/InkWell pattern)
 
 ### Import Conflict with Switch
 
@@ -356,6 +357,60 @@ void _onTextChanged(String value) {
   _textValue = value;  // Store but don't update content
 }
 ```
+
+### Slider Alternative - Tappable Rating Scale
+
+RFW does not include `Slider` in its default widget registries. For rating/slider-like functionality, implement a tappable button row:
+
+```
+// Individual rating button component
+widget RatingOption = InkWell(
+  onTap: event "rating_changed" {
+    formId: "rating",
+    value: args.value,
+  },
+  child: Container(
+    width: 32.0,
+    height: 40.0,
+    child: Center(
+      child: switch args.isSelected {
+        true: ClipRRect(
+          borderRadius: [16.0],
+          child: ColoredBox(
+            color: 0xFF1976D2,
+            child: SizedBox(
+              width: 32.0,
+              height: 32.0,
+              child: Center(
+                child: Text(
+                  text: args.label,
+                  style: { fontSize: 14.0, fontWeight: "bold", color: 0xFFFFFFFF },
+                ),
+              ),
+            ),
+          ),
+        ),
+        default: Text(
+          text: args.label,
+          style: { fontSize: 14.0, color: 0xFF757575 },
+        ),
+      },
+    ),
+  ),
+);
+
+// Usage - row of rating options 1-10
+Row(
+  mainAxisAlignment: "spaceBetween",
+  children: [
+    RatingOption(value: 1, label: "1", isSelected: data.is1Selected),
+    RatingOption(value: 2, label: "2", isSelected: data.is2Selected),
+    // ... etc
+  ],
+)
+```
+
+Host computes `is1Selected`, `is2Selected`, etc. as booleans based on current selection.
 
 ### Empty errorText
 

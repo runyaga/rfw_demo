@@ -1,0 +1,206 @@
+// Form 11: Rating Slider with Labels
+// Horizontal slider 1-10 with semantic labels at key points.
+// Slider implemented using tappable buttons since Slider not registered in RFW.
+//
+// Events fired:
+// - 'rating_changed' with { formId: String, value: int }
+// - 'form_submit' with { formId: String, data: { rating: int } }
+// - 'form_skip' with { formId: String }
+
+import core;
+import material;
+
+// Individual rating option (1-10)
+widget RatingOption = InkWell(
+  onTap: event "rating_changed" {
+    formId: "rating_slider",
+    value: args.value,
+  },
+  child: Container(
+    width: 32.0,
+    height: 40.0,
+    child: Center(
+      child: switch args.isSelected {
+        true: ClipRRect(
+          borderRadius: [16.0],
+          child: ColoredBox(
+            color: 0xFF1976D2,
+            child: SizedBox(
+              width: 32.0,
+              height: 32.0,
+              child: Center(
+                child: Text(
+                  text: args.label,
+                  style: {
+                    fontSize: 14.0,
+                    fontWeight: "bold",
+                    color: 0xFFFFFFFF,
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+        default: Text(
+          text: args.label,
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+      },
+    ),
+  ),
+);
+
+widget RatingSliderForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "How would you rate your experience?",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Select a rating from 1 to 10",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 24.0),
+        // Rating scale labels
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "max",
+          children: [
+            Text(
+              text: "Poor",
+              style: { fontSize: 12.0, color: 0xFF9E9E9E },
+            ),
+            Text(
+              text: "Average",
+              style: { fontSize: 12.0, color: 0xFF9E9E9E },
+            ),
+            Text(
+              text: "Excellent",
+              style: { fontSize: 12.0, color: 0xFF9E9E9E },
+            ),
+          ],
+        ),
+        SizedBox(height: 8.0),
+        // Rating options 1-10
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "max",
+          children: [
+            RatingOption(value: 1, label: "1", isSelected: data.is1Selected),
+            RatingOption(value: 2, label: "2", isSelected: data.is2Selected),
+            RatingOption(value: 3, label: "3", isSelected: data.is3Selected),
+            RatingOption(value: 4, label: "4", isSelected: data.is4Selected),
+            RatingOption(value: 5, label: "5", isSelected: data.is5Selected),
+            RatingOption(value: 6, label: "6", isSelected: data.is6Selected),
+            RatingOption(value: 7, label: "7", isSelected: data.is7Selected),
+            RatingOption(value: 8, label: "8", isSelected: data.is8Selected),
+            RatingOption(value: 9, label: "9", isSelected: data.is9Selected),
+            RatingOption(value: 10, label: "10", isSelected: data.is10Selected),
+          ],
+        ),
+        SizedBox(height: 8.0),
+        // Semantic label based on selection
+        switch data.hasSelection {
+          true: Center(
+            child: ClipRRect(
+              borderRadius: [12.0],
+              child: ColoredBox(
+                color: data.ratingColor,
+                child: Padding(
+                  padding: [12.0, 6.0, 12.0, 6.0],
+                  child: Text(
+                    text: data.ratingLabel,
+                    style: {
+                      fontSize: 14.0,
+                      fontWeight: "bold",
+                      color: 0xFFFFFFFF,
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+          default: SizedBox(height: 28.0),
+        },
+        SizedBox(height: 16.0),
+        // Validation error
+        switch data.validationError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 0.0, 0.0, 12.0],
+            child: Row(
+              mainAxisSize: "min",
+              children: [
+                Icon(icon: 0xE002, fontFamily: "MaterialIcons", size: 16.0, color: 0xFFF44336),
+                SizedBox(width: 4.0),
+                Text(
+                  text: data.validationError,
+                  style: {
+                    fontSize: 12.0,
+                    color: 0xFFF44336,
+                  },
+                ),
+              ],
+            ),
+          ),
+        },
+        // Buttons
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_skip" {
+                formId: "rating_slider",
+              },
+              child: Text(
+                text: "Skip",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            switch data.hasSelection {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "rating_slider",
+                  data: {
+                    rating: data.selectedValue,
+                    ratingLabel: data.ratingLabel,
+                  },
+                },
+                child: Text(text: "Submit Rating"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "rating_slider",
+                  reason: "no_selection",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Submit Rating"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);
