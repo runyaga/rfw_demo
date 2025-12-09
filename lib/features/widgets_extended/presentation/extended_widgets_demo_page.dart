@@ -59,6 +59,20 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
   bool _checkbox2 = true;
   bool _checkbox3 = false;
 
+  // Track datetime picker state
+  String _selectedDate = '2024-12-09';
+  String _selectedTime = '14:30';
+  String _appointmentDate = '2024-12-15';
+  String _appointmentStartTime = '09:00';
+  String _appointmentEndTime = '10:00';
+
+  // Track map viewer state
+  double _mapLatitude = 37.7749;
+  double _mapLongitude = -122.4194;
+  double _mapZoom = 13.0;
+  String _selectedLocationName = 'San Francisco';
+  String _selectedLocationDetails = 'California, USA';
+
   @override
   void initState() {
     super.initState();
@@ -78,6 +92,8 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
       'skeleton_loader',
       'dropdown_selector',
       'bottom_nav',
+      'datetime_picker',
+      'map_viewer',
     ];
 
     for (final widgetId in widgets) {
@@ -182,8 +198,141 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
       if (name == 'checkboxes_submit') {
         debugPrint('Checkboxes submitted: ${args['checkbox1']}, ${args['checkbox2']}, ${args['checkbox3']}');
       }
+
+      // Handle datetime picker events
+      if (name == 'pick_datetime' || name == 'pick_date') {
+        // In a real app, show native date picker and update _selectedDate
+        _showDatePickerDemo();
+      }
+      if (name == 'pick_time') {
+        // In a real app, show native time picker and update _selectedTime
+        _showTimePickerDemo();
+      }
+      if (name == 'pick_appointment_date') {
+        _showAppointmentDatePicker();
+      }
+      if (name == 'pick_start_time') {
+        _showStartTimePicker();
+      }
+      if (name == 'pick_end_time') {
+        _showEndTimePicker();
+      }
+
+      // Handle map events
+      if (name == 'map_tap' || name == 'location_selected') {
+        final lat = args['lat'];
+        final lng = args['lng'];
+        if (lat is num && lng is num) {
+          _mapLatitude = lat.toDouble();
+          _mapLongitude = lng.toDouble();
+          _selectedLocationName = 'Selected Location';
+          _selectedLocationDetails = '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
+        }
+      }
+      if (name == 'marker_tap' || name == 'store_selected') {
+        final label = args['label']?.toString() ?? 'Unknown';
+        final lat = args['lat'];
+        final lng = args['lng'];
+        _selectedLocationName = label;
+        if (lat is num && lng is num) {
+          _selectedLocationDetails = '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
+        }
+      }
+      if (name == 'zoom_in') {
+        _mapZoom = (_mapZoom + 1).clamp(1.0, 18.0);
+      }
+      if (name == 'zoom_out') {
+        _mapZoom = (_mapZoom - 1).clamp(1.0, 18.0);
+      }
+      if (name == 'center_location') {
+        // Reset to default location
+        _mapLatitude = 37.7749;
+        _mapLongitude = -122.4194;
+      }
+      if (name == 'get_directions') {
+        debugPrint('Get directions requested');
+      }
     });
     debugPrint('Event: $name, args: $args');
+  }
+
+  Future<void> _showDatePickerDemo() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(_selectedDate) ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (date != null && mounted) {
+      setState(() {
+        _selectedDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      });
+    }
+  }
+
+  Future<void> _showTimePickerDemo() async {
+    final parts = _selectedTime.split(':');
+    final initialTime = TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 12,
+      minute: int.tryParse(parts[1]) ?? 0,
+    );
+    final time = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    if (time != null && mounted) {
+      setState(() {
+        _selectedTime = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      });
+    }
+  }
+
+  Future<void> _showAppointmentDatePicker() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(_appointmentDate) ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (date != null && mounted) {
+      setState(() {
+        _appointmentDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      });
+    }
+  }
+
+  Future<void> _showStartTimePicker() async {
+    final parts = _appointmentStartTime.split(':');
+    final initialTime = TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 9,
+      minute: int.tryParse(parts[1]) ?? 0,
+    );
+    final time = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    if (time != null && mounted) {
+      setState(() {
+        _appointmentStartTime = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      });
+    }
+  }
+
+  Future<void> _showEndTimePicker() async {
+    final parts = _appointmentEndTime.split(':');
+    final initialTime = TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 10,
+      minute: int.tryParse(parts[1]) ?? 0,
+    );
+    final time = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    if (time != null && mounted) {
+      setState(() {
+        _appointmentEndTime = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      });
+    }
   }
 
   @override
@@ -228,9 +377,14 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
                   _buildSectionTitle('Composite Bottom Nav (Options & Checkboxes)'),
                   _buildCompositeBottomNavDemo(),
                   const SizedBox(height: 24),
-                  // Placeholder sections for future widgets
-                  _buildComingSoonSection('DateTime Picker'),
-                  _buildComingSoonSection('Map Viewer'),
+                  _buildSectionTitle('DateTime Picker'),
+                  _buildDateTimePickerDemo(),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Appointment Picker'),
+                  _buildAppointmentPickerDemo(),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('GIS Map Viewer'),
+                  _buildMapViewerDemo(),
                 ],
               ),
             ),
@@ -257,7 +411,7 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
             ),
             SizedBox(height: 12),
             Text(
-              'Current Widgets:',
+              'Widgets:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
             SizedBox(height: 8),
@@ -268,9 +422,9 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
               '• Breadcrumbs - Navigation path display\n'
               '• Skeleton Loader - Loading placeholders\n'
               '• Dropdown Selector - Selection from options\n'
-              '• Bottom Navigation - App-level navigation\n\n'
-              'Coming Soon:\n'
-              '• DateTime Picker, GIS Map Viewer',
+              '• Bottom Navigation - App-level navigation\n'
+              '• DateTime Picker - Date/time selection with native dialogs\n'
+              '• GIS Map Viewer - OpenStreetMap with markers and events',
               style: TextStyle(fontSize: 12, height: 1.4),
             ),
           ],
@@ -661,40 +815,102 @@ class _ExtendedWidgetsDemoPageState extends State<ExtendedWidgetsDemoPage> {
     );
   }
 
-  Widget _buildComingSoonSection(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Card(
-        color: Colors.grey.shade100,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.hourglass_empty, color: Colors.grey.shade400),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    Text(
-                      'Coming soon in Stage 9',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+  Widget _buildDateTimePickerDemo() {
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Date: $_selectedDate  |  Time: $_selectedTime',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 12),
+            _buildDateTimeRow(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateTimeRow() {
+    final content = DynamicContent();
+    content.update('dateLabel', 'Date');
+    content.update('timeLabel', 'Time');
+    content.update('selectedDate', _selectedDate);
+    content.update('selectedTime', _selectedTime);
+
+    return RemoteWidget(
+      runtime: rfwEnvironment.runtime,
+      data: content,
+      widget: const FullyQualifiedWidgetName(
+        LibraryName(<String>['datetime_picker']),
+        'DateTimeRow',
+      ),
+      onEvent: _handleEvent,
+    );
+  }
+
+  Widget _buildAppointmentPickerDemo() {
+    final content = DynamicContent();
+    content.update('title', 'Schedule Meeting');
+    content.update('appointmentDate', _appointmentDate);
+    content.update('startTime', _appointmentStartTime);
+    content.update('endTime', _appointmentEndTime);
+
+    return RemoteWidget(
+      runtime: rfwEnvironment.runtime,
+      data: content,
+      widget: const FullyQualifiedWidgetName(
+        LibraryName(<String>['datetime_picker']),
+        'AppointmentPicker',
+      ),
+      onEvent: _handleEvent,
+    );
+  }
+
+  Widget _buildMapViewerDemo() {
+    final content = DynamicContent();
+    content.update('title', 'Location');
+    content.update('height', 250.0);
+    content.update('mapHeight', 200.0);
+    content.update('latitude', _mapLatitude);
+    content.update('longitude', _mapLongitude);
+    content.update('zoom', _mapZoom);
+    content.update('locationName', _selectedLocationName);
+    content.update('locationDetails', _selectedLocationDetails);
+    content.update('markerCount', 2);
+    content.update('markers', <Object>[
+      <String, Object>{
+        'lat': 37.7749,
+        'lng': -122.4194,
+        'label': 'San Francisco',
+        'id': 'sf',
+      },
+      <String, Object>{
+        'lat': 37.8044,
+        'lng': -122.2712,
+        'label': 'Oakland',
+        'id': 'oak',
+      },
+    ]);
+    content.update('enableTapToSelect', true);
+
+    return Card(
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        height: 350,
+        child: RemoteWidget(
+          runtime: rfwEnvironment.runtime,
+          data: content,
+          widget: const FullyQualifiedWidgetName(
+            LibraryName(<String>['map_viewer']),
+            'MapWithInfoPanel',
           ),
+          onEvent: _handleEvent,
         ),
       ),
     );

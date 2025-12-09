@@ -1,0 +1,219 @@
+// DateTime Picker widget - Displays selected date/time and triggers picker dialog
+// Per Stage 9: Extended Widget Library
+//
+// Note: DateTimePicker is a native widget registered in material_registry.dart
+// The widget displays the current value and emits a pick_datetime event
+// Host intercepts the event and shows native showDatePicker/showTimePicker
+//
+// Data Contract:
+// {
+//   label: "Select Date",
+//   mode: "date" | "time" | "datetime",
+//   selectedDate: "2024-12-09",
+//   selectedTime: "14:30",
+//   displayValue: "Dec 9, 2024",  // Optional formatted display
+//   enabled: true
+// }
+//
+// Events:
+// - 'pick_datetime' with { mode: string, currentDate: string, currentTime: string }
+
+import core;
+import material;
+
+// Simple date picker button
+widget SimpleDatePicker = DateTimePicker(
+  label: data.label,
+  mode: "date",
+  selectedDate: data.selectedDate,
+  onTap: event "pick_datetime" { },
+);
+
+// Simple time picker button
+widget SimpleTimePicker = DateTimePicker(
+  label: data.label,
+  mode: "time",
+  selectedTime: data.selectedTime,
+  onTap: event "pick_datetime" { },
+);
+
+// Combined datetime picker button
+widget SimpleDateTimePicker = DateTimePicker(
+  label: data.label,
+  mode: "datetime",
+  selectedDate: data.selectedDate,
+  selectedTime: data.selectedTime,
+  onTap: event "pick_datetime" { },
+);
+
+// Date picker with custom display value
+widget DatePickerWithDisplay = DateTimePicker(
+  label: data.label,
+  mode: "date",
+  selectedDate: data.selectedDate,
+  displayValue: data.displayValue,
+  onTap: event "pick_datetime" { },
+);
+
+// Date picker in a form card layout
+widget DatePickerCard = Card(
+  elevation: 1.0,
+  margin: [8.0],
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: data.title,
+          style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+        ),
+        SizedBox(height: 4.0),
+        Text(
+          text: data.description,
+          style: { fontSize: 13.0, color: 0xFF757575 },
+        ),
+        SizedBox(height: 12.0),
+        DateTimePicker(
+          label: data.label,
+          mode: data.mode,
+          selectedDate: data.selectedDate,
+          selectedTime: data.selectedTime,
+          displayValue: data.displayValue,
+          onTap: event "pick_datetime" { },
+        ),
+      ],
+    ),
+  ),
+);
+
+// Date and time side by side (for scheduling)
+widget DateTimeRow = Row(
+  children: [
+    Expanded(
+      child: DateTimePicker(
+        label: data.dateLabel,
+        mode: "date",
+        selectedDate: data.selectedDate,
+        icon: 0xe916,
+        onTap: event "pick_date" { },
+      ),
+    ),
+    SizedBox(width: 12.0),
+    Expanded(
+      child: DateTimePicker(
+        label: data.timeLabel,
+        mode: "time",
+        selectedTime: data.selectedTime,
+        icon: 0xe8b5,
+        onTap: event "pick_time" { },
+      ),
+    ),
+  ],
+);
+
+// Date range picker (start and end dates)
+widget DateRangePicker = Column(
+  crossAxisAlignment: "start",
+  mainAxisSize: "min",
+  children: [
+    Text(
+      text: data.title,
+      style: { fontSize: 14.0, color: 0xFF424242, fontWeight: "w500" },
+    ),
+    SizedBox(height: 8.0),
+    Row(
+      children: [
+        Expanded(
+          child: DateTimePicker(
+            label: data.startLabel,
+            mode: "date",
+            selectedDate: data.startDate,
+            onTap: event "pick_start_date" { },
+          ),
+        ),
+        Padding(
+          padding: [8.0, 0.0, 8.0, 0.0],
+          child: Text(
+            text: "to",
+            style: { fontSize: 14.0, color: 0xFF757575 },
+          ),
+        ),
+        Expanded(
+          child: DateTimePicker(
+            label: data.endLabel,
+            mode: "date",
+            selectedDate: data.endDate,
+            onTap: event "pick_end_date" { },
+          ),
+        ),
+      ],
+    ),
+  ],
+);
+
+// Appointment scheduler with date, start time, and end time
+widget AppointmentPicker = Card(
+  elevation: 2.0,
+  margin: [8.0],
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      mainAxisSize: "min",
+      children: [
+        Row(
+          children: [
+            Icon(icon: 0xe614, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF1976D2),
+            SizedBox(width: 8.0),
+            Text(
+              text: data.title,
+              style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+            ),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        DateTimePicker(
+          label: "Date",
+          mode: "date",
+          selectedDate: data.appointmentDate,
+          onTap: event "pick_appointment_date" { },
+        ),
+        SizedBox(height: 12.0),
+        Row(
+          children: [
+            Expanded(
+              child: DateTimePicker(
+                label: "Start Time",
+                mode: "time",
+                selectedTime: data.startTime,
+                onTap: event "pick_start_time" { },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            Expanded(
+              child: DateTimePicker(
+                label: "End Time",
+                mode: "time",
+                selectedTime: data.endTime,
+                onTap: event "pick_end_time" { },
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);
+
+// Disabled date picker (for read-only display)
+widget DisabledDatePicker = DateTimePicker(
+  label: data.label,
+  mode: data.mode,
+  selectedDate: data.selectedDate,
+  selectedTime: data.selectedTime,
+  displayValue: data.displayValue,
+  enabled: false,
+  onTap: event "pick_datetime" { },
+);

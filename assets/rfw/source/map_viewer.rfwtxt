@@ -1,0 +1,310 @@
+// GIS Map Viewer widget - OpenStreetMap-based map display
+// Per Stage 9: Extended Widget Library
+//
+// Note: FlutterMap is registered in map_registry.dart
+// Requires network access for tile loading.
+// On macOS, ensure com.apple.security.network.client entitlement is set.
+//
+// Data Contract:
+// {
+//   latitude: 37.7749,
+//   longitude: -122.4194,
+//   zoom: 13.0,
+//   markerCount: 2,
+//   markers: [
+//     { lat: 37.7749, lng: -122.4194, label: "San Francisco", id: "sf" },
+//     { lat: 37.8044, lng: -122.2712, label: "Oakland", id: "oak" }
+//   ],
+//   enableTapToSelect: true
+// }
+//
+// Events:
+// - 'map_tap' with { lat: double, lng: double }
+// - 'marker_tap' with { markerId: string, lat: double, lng: double, label: string }
+
+import core;
+import material;
+import map;
+
+// Simple map viewer with center point and zoom
+widget SimpleMapViewer = SizedBox(
+  height: data.height,
+  child: FlutterMap(
+    latitude: data.latitude,
+    longitude: data.longitude,
+    zoom: data.zoom,
+    onMapTap: event "map_tap" { },
+  ),
+);
+
+// Map viewer with markers
+widget MapViewerWithMarkers = SizedBox(
+  height: data.height,
+  child: FlutterMap(
+    latitude: data.latitude,
+    longitude: data.longitude,
+    zoom: data.zoom,
+    markerCount: data.markerCount,
+    markers: data.markers,
+    onMarkerTap: event "marker_tap" { },
+  ),
+);
+
+// Map viewer with tap-to-select location enabled
+widget LocationPickerMap = SizedBox(
+  height: data.height,
+  child: FlutterMap(
+    latitude: data.latitude,
+    longitude: data.longitude,
+    zoom: data.zoom,
+    enableTapToSelect: true,
+    onMapTap: event "location_selected" { },
+  ),
+);
+
+// Map viewer in a card with title
+widget MapCard = Card(
+  elevation: 2.0,
+  margin: [8.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      Padding(
+        padding: [16.0, 12.0, 16.0, 8.0],
+        child: Row(
+          children: [
+            Icon(icon: 0xe55f, fontFamily: "MaterialIcons", size: 20.0, color: 0xFF1976D2),
+            SizedBox(width: 8.0),
+            Text(
+              text: data.title,
+              style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+            ),
+          ],
+        ),
+      ),
+      SizedBox(
+        height: data.height,
+        child: ClipRRect(
+          borderRadius: [0.0, 0.0, 4.0, 4.0],
+          child: FlutterMap(
+            latitude: data.latitude,
+            longitude: data.longitude,
+            zoom: data.zoom,
+            markerCount: data.markerCount,
+            markers: data.markers,
+            onMapTap: event "map_tap" { },
+            onMarkerTap: event "marker_tap" { },
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
+// Map with location info panel below
+widget MapWithInfoPanel = Column(
+  mainAxisSize: "min",
+  children: [
+    SizedBox(
+      height: data.mapHeight,
+      child: FlutterMap(
+        latitude: data.latitude,
+        longitude: data.longitude,
+        zoom: data.zoom,
+        markerCount: data.markerCount,
+        markers: data.markers,
+        enableTapToSelect: data.enableTapToSelect,
+        onMapTap: event "map_tap" { },
+        onMarkerTap: event "marker_tap" { },
+      ),
+    ),
+    Container(
+      color: 0xFFF5F5F5,
+      child: Padding(
+        padding: [16.0, 12.0, 16.0, 12.0],
+        child: Row(
+          mainAxisAlignment: "spaceBetween",
+          children: [
+            Column(
+              crossAxisAlignment: "start",
+              mainAxisSize: "min",
+              children: [
+                Text(
+                  text: data.locationName,
+                  style: { fontSize: 14.0, color: 0xFF212121, fontWeight: "w500" },
+                ),
+                SizedBox(height: 2.0),
+                Text(
+                  text: data.locationDetails,
+                  style: { fontSize: 12.0, color: 0xFF757575 },
+                ),
+              ],
+            ),
+            Icon(icon: 0xe0c8, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF1976D2),
+          ],
+        ),
+      ),
+    ),
+  ],
+);
+
+// Location selector with map and coordinates display
+widget LocationSelector = Card(
+  elevation: 2.0,
+  margin: [8.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      Padding(
+        padding: [16.0, 12.0, 16.0, 4.0],
+        child: Text(
+          text: data.title,
+          style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+        ),
+      ),
+      Padding(
+        padding: [16.0, 0.0, 16.0, 8.0],
+        child: Text(
+          text: data.instructions,
+          style: { fontSize: 13.0, color: 0xFF757575 },
+        ),
+      ),
+      SizedBox(
+        height: data.height,
+        child: FlutterMap(
+          latitude: data.latitude,
+          longitude: data.longitude,
+          zoom: data.zoom,
+          enableTapToSelect: true,
+          markerCount: data.markerCount,
+          markers: data.markers,
+          onMapTap: event "location_selected" { },
+        ),
+      ),
+      Container(
+        color: 0xFFE3F2FD,
+        child: Padding(
+          padding: [16.0, 12.0, 16.0, 12.0],
+          child: Row(
+            children: [
+              Icon(icon: 0xe55f, fontFamily: "MaterialIcons", size: 18.0, color: 0xFF1976D2),
+              SizedBox(width: 8.0),
+              Expanded(
+                child: Text(
+                  text: data.selectedCoordinates,
+                  style: { fontSize: 13.0, color: 0xFF1976D2, fontWeight: "w500" },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
+// Full-screen map with floating controls
+widget FullScreenMap = Stack(
+  children: [
+    FlutterMap(
+      latitude: data.latitude,
+      longitude: data.longitude,
+      zoom: data.zoom,
+      minZoom: data.minZoom,
+      maxZoom: data.maxZoom,
+      markerCount: data.markerCount,
+      markers: data.markers,
+      enableTapToSelect: data.enableTapToSelect,
+      onMapTap: event "map_tap" { },
+      onMarkerTap: event "marker_tap" { },
+    ),
+    Positioned(
+      top: 16.0,
+      right: 16.0,
+      child: Column(
+        mainAxisSize: "min",
+        children: [
+          FloatingActionButton(
+            onPressed: event "zoom_in" { },
+            child: Icon(icon: 0xe145, fontFamily: "MaterialIcons"),
+          ),
+          SizedBox(height: 8.0),
+          FloatingActionButton(
+            onPressed: event "zoom_out" { },
+            child: Icon(icon: 0xe15b, fontFamily: "MaterialIcons"),
+          ),
+          SizedBox(height: 8.0),
+          FloatingActionButton(
+            onPressed: event "center_location" { },
+            child: Icon(icon: 0xe55c, fontFamily: "MaterialIcons"),
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+
+// Store locator style map with markers and selection
+widget StoreLocatorMap = Column(
+  mainAxisSize: "min",
+  children: [
+    SizedBox(
+      height: data.mapHeight,
+      child: FlutterMap(
+        latitude: data.latitude,
+        longitude: data.longitude,
+        zoom: data.zoom,
+        markerCount: data.markerCount,
+        markers: data.markers,
+        onMarkerTap: event "store_selected" { },
+      ),
+    ),
+    Card(
+      elevation: 4.0,
+      margin: [0.0],
+      child: Padding(
+        padding: [16.0],
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: [4.0],
+              child: ColoredBox(
+                color: 0xFFE0E0E0,
+                child: SizedBox(height: 60.0, width: 60.0),
+              ),
+            ),
+            SizedBox(width: 12.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: "start",
+                mainAxisSize: "min",
+                children: [
+                  Text(
+                    text: data.storeName,
+                    style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+                  ),
+                  SizedBox(height: 2.0),
+                  Text(
+                    text: data.storeAddress,
+                    style: { fontSize: 13.0, color: 0xFF757575 },
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    text: data.storeDistance,
+                    style: { fontSize: 12.0, color: 0xFF1976D2 },
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: event "get_directions" { },
+              icon: Icon(icon: 0xe52f, fontFamily: "MaterialIcons", color: 0xFF1976D2),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],
+);
