@@ -9,13 +9,12 @@ Remote Flutter Widgets (RFW) implementation spike. Server-driven UI architecture
 
 ## Status
 
-**Stages:** 9 of 12 complete | **Tests:** 135 passing
+**Stages:** 10 of 12 complete | **Tests:** 135 passing
 
 | Stage | Description | Status |
 |-------|-------------|--------|
-| 1-8 | Foundation through Widget Inventory | ✅ |
-| 9 | Extended Widget Library | ✅ |
-| 10 | CI/CD & GitHub Pages | In Progress |
+| 1-9 | Foundation through Extended Widgets | ✅ |
+| 10 | CI/CD & GitHub Pages | ✅ |
 | 11 | Contract Testing | Pending |
 | 12 | Production Hardening | Pending |
 
