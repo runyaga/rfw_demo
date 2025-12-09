@@ -1,0 +1,111 @@
+// Accordion widget - Collapsible sections with title/content
+// Per Stage 9: Extended Widget Library
+//
+// Data Contract for AccordionSection:
+// {
+//   title: "Section Title",
+//   content: "Section content text",
+//   expanded: false,
+//   sectionIndex: 0,
+//   sectionId: "section-1"
+// }
+//
+// Events:
+// - 'accordion_expand' with { sectionIndex: int, sectionId: string }
+// - 'panel_expand' with { panelId: string }
+
+import core;
+import material;
+
+// Single accordion section
+widget AccordionSection = ExpansionTile(
+  title: Text(
+    text: data.title,
+    style: { fontWeight: "w500", fontSize: 16.0, color: 0xFF212121 },
+  ),
+  initiallyExpanded: data.expanded,
+  maintainState: true,
+  iconColor: 0xFF1976D2,
+  collapsedIconColor: 0xFF757575,
+  onExpansionChanged: event "accordion_expand" {
+    sectionIndex: data.sectionIndex,
+    sectionId: data.sectionId,
+  },
+  children: [
+    Padding(
+      padding: [16.0, 8.0, 16.0, 16.0],
+      child: Text(
+        text: data.content,
+        style: { fontSize: 14.0, color: 0xFF424242, height: 1.5 },
+      ),
+    ),
+  ],
+);
+
+// Accordion section with subtitle
+widget AccordionSectionWithSubtitle = ExpansionTile(
+  title: Text(
+    text: data.title,
+    style: { fontWeight: "w500", fontSize: 16.0, color: 0xFF212121 },
+  ),
+  subtitle: Text(
+    text: data.subtitle,
+    style: { fontSize: 13.0, color: 0xFF757575 },
+  ),
+  initiallyExpanded: data.expanded,
+  maintainState: true,
+  iconColor: 0xFF1976D2,
+  collapsedIconColor: 0xFF757575,
+  onExpansionChanged: event "accordion_expand" {
+    sectionIndex: data.sectionIndex,
+    sectionId: data.sectionId,
+  },
+  children: [
+    Padding(
+      padding: [16.0, 8.0, 16.0, 16.0],
+      child: Text(
+        text: data.content,
+        style: { fontSize: 14.0, color: 0xFF424242, height: 1.5 },
+      ),
+    ),
+  ],
+);
+
+// Simple expandable panel (single item, no card wrapper)
+widget ExpandablePanel = ExpansionTile(
+  title: Text(
+    text: data.title,
+    style: { fontWeight: "w500", fontSize: 15.0, color: 0xFF212121 },
+  ),
+  initiallyExpanded: data.expanded,
+  childrenPadding: [16.0, 0.0, 16.0, 16.0],
+  onExpansionChanged: event "panel_expand" {
+    panelId: data.panelId,
+  },
+  children: [
+    Text(
+      text: data.content,
+      style: { fontSize: 14.0, color: 0xFF616161, height: 1.4 },
+    ),
+  ],
+);
+
+// Expandable panel with icon
+widget ExpandablePanelWithIcon = ExpansionTile(
+  leading: Icon(icon: data.iconCode, size: 20.0, color: 0xFF1976D2),
+  title: Text(
+    text: data.title,
+    style: { fontWeight: "w500", fontSize: 15.0, color: 0xFF212121 },
+  ),
+  initiallyExpanded: data.expanded,
+  childrenPadding: [16.0, 0.0, 16.0, 16.0],
+  onExpansionChanged: event "panel_expand" {
+    panelId: data.panelId,
+  },
+  children: [
+    Text(
+      text: data.content,
+      style: { fontSize: 14.0, color: 0xFF616161, height: 1.4 },
+    ),
+  ],
+);

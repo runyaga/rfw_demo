@@ -1,0 +1,89 @@
+// Feature Toggle (Example 6)
+// Demonstrates stateless round-trip pattern for toggle switches.
+//
+// Per DESIGN.md Example 6 Analysis:
+// "RFW widgets are stateless. The Switch widget does not toggle itself.
+// When the user taps it, it fires toggle_changed. The client must catch
+// this, update the local variable isEnabled, regenerate DynamicContent,
+// and update the runtime."
+//
+// Events fired:
+// - 'toggle_changed' with { featureId: String, newValue: bool }
+
+import core;
+import material;
+
+widget FeatureToggle = Container(
+  padding: [16.0],
+  child: Row(
+    mainAxisAlignment: "spaceBetween",
+    children: [
+      Expanded(
+        child: Column(
+          crossAxisAlignment: "start",
+          children: [
+            Text(
+              text: data.featureLabel,
+              style: {
+                fontSize: 16.0,
+                fontWeight: "w500",
+              },
+            ),
+            SizedBox(height: 4.0),
+            Text(
+              text: data.featureDescription,
+              style: {
+                fontSize: 12.0,
+                color: 0xFF757575,
+              },
+            ),
+          ],
+        ),
+      ),
+      SizedBox(width: 16.0),
+      Switch(
+        value: data.isEnabled,
+        onChanged: event "toggle_changed" {
+          featureId: data.featureId,
+          newValue: data.isEnabled,
+        },
+      ),
+    ],
+  ),
+);
+
+// A card-wrapped variant for settings screens
+widget FeatureToggleCard = Card(
+  margin: [8.0, 4.0],
+  child: FeatureToggle(),
+);
+
+// Multiple toggles in a group
+widget FeatureToggleGroup = Column(
+  crossAxisAlignment: "stretch",
+  children: [
+    Padding(
+      padding: [16.0, 16.0, 16.0, 8.0],
+      child: Text(
+        text: data.groupTitle,
+        style: {
+          fontSize: 14.0,
+          fontWeight: "bold",
+          color: 0xFF424242,
+        },
+      ),
+    ),
+    ...for feature in data.features:
+      Container(
+        decoration: {
+          border: {
+            bottom: {
+              color: 0xFFE0E0E0,
+              width: 1.0,
+            },
+          },
+        },
+        child: FeatureToggle(),
+      ),
+  ],
+);

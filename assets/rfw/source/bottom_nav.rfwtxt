@@ -1,0 +1,358 @@
+// Bottom Navigation widget - App-level navigation bar
+// Per Stage 9: Extended Widget Library
+//
+// Note: BottomNavigationBar is registered in material_registry.dart
+// This file provides RFW wrapper widgets for common navigation patterns.
+//
+// Data Contract:
+// {
+//   selectedIndex: 0,
+//   items: [
+//     { label: "Home", iconCode: 0xe88a },
+//     { label: "Search", iconCode: 0xe8b6 },
+//     { label: "Profile", iconCode: 0xe7fd },
+//   ]
+// }
+//
+// Events:
+// - 'nav_item_tapped' with { index: int, label: string }
+
+import core;
+import material;
+
+// Simple 3-item bottom navigation (most common case)
+widget ThreeItemBottomNav = BottomNavigationBar(
+  currentIndex: data.selectedIndex,
+  onTap: event "nav_item_tapped" { },
+  item0Label: data.item0Label,
+  item0Icon: data.item0Icon,
+  item1Label: data.item1Label,
+  item1Icon: data.item1Icon,
+  item2Label: data.item2Label,
+  item2Icon: data.item2Icon,
+);
+
+// 4-item bottom navigation
+widget FourItemBottomNav = BottomNavigationBar(
+  currentIndex: data.selectedIndex,
+  onTap: event "nav_item_tapped" { },
+  item0Label: data.item0Label,
+  item0Icon: data.item0Icon,
+  item1Label: data.item1Label,
+  item1Icon: data.item1Icon,
+  item2Label: data.item2Label,
+  item2Icon: data.item2Icon,
+  item3Label: data.item3Label,
+  item3Icon: data.item3Icon,
+);
+
+// 5-item bottom navigation
+widget FiveItemBottomNav = BottomNavigationBar(
+  currentIndex: data.selectedIndex,
+  onTap: event "nav_item_tapped" { },
+  item0Label: data.item0Label,
+  item0Icon: data.item0Icon,
+  item1Label: data.item1Label,
+  item1Icon: data.item1Icon,
+  item2Label: data.item2Label,
+  item2Icon: data.item2Icon,
+  item3Label: data.item3Label,
+  item3Icon: data.item3Icon,
+  item4Label: data.item4Label,
+  item4Icon: data.item4Icon,
+);
+
+// Bottom nav with page content - scaffold pattern
+widget BottomNavScaffold = Column(
+  children: [
+    // Content area
+    Expanded(
+      child: Container(
+        padding: [16.0],
+        child: Text(
+          text: data.pageContent,
+          style: { fontSize: 14.0, color: 0xFF424242 },
+        ),
+      ),
+    ),
+    // Bottom navigation bar
+    BottomNavigationBar(
+      currentIndex: data.selectedIndex,
+      onTap: event "nav_item_tapped" { },
+      item0Label: data.item0Label,
+      item0Icon: data.item0Icon,
+      item1Label: data.item1Label,
+      item1Icon: data.item1Icon,
+      item2Label: data.item2Label,
+      item2Icon: data.item2Icon,
+    ),
+  ],
+);
+
+// Bottom nav with labeled items (showing item count badge pattern)
+widget BottomNavWithBadge = Column(
+  children: [
+    Expanded(
+      child: Center(
+        child: Text(
+          text: data.pageTitle,
+          style: { fontSize: 20.0, fontWeight: "bold", color: 0xFF212121 },
+        ),
+      ),
+    ),
+    BottomNavigationBar(
+      currentIndex: data.selectedIndex,
+      onTap: event "nav_item_tapped" { },
+      item0Label: data.item0Label,
+      item0Icon: data.item0Icon,
+      item1Label: data.item1Label,
+      item1Icon: data.item1Icon,
+      item2Label: data.item2Label,
+      item2Icon: data.item2Icon,
+    ),
+  ],
+);
+
+// ============================================================
+// Composite Bottom Nav with Options and Checkboxes sections
+// ============================================================
+
+// Single selectable option box - uses Card for reliable background color
+widget OptionBox = Padding(
+  padding: [4.0],
+  child: InkWell(
+    onTap: event "option_selected" {
+      optionId: args.optionId,
+      value: args.value,
+    },
+    child: Card(
+      elevation: switch args.isSelected {
+        true: 4.0,
+        default: 1.0,
+      },
+      color: switch args.isSelected {
+        true: 0xFF1976D2,
+        default: 0xFFF5F5F5,
+      },
+      child: Padding(
+        padding: [12.0],
+        child: Column(
+          mainAxisSize: "min",
+          children: [
+            Icon(
+              icon: args.iconCode,
+              size: 28.0,
+              color: switch args.isSelected {
+                true: 0xFFFFFFFF,
+                default: 0xFF757575,
+              },
+            ),
+            SizedBox(height: 4.0),
+            Text(
+              text: args.label,
+              style: {
+                fontSize: 12.0,
+                fontWeight: switch args.isSelected {
+                  true: "bold",
+                  default: "normal",
+                },
+                color: switch args.isSelected {
+                  true: 0xFFFFFFFF,
+                  default: 0xFF424242,
+                },
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+
+// Options content - 3 option boxes with submit button
+widget OptionsContent = Padding(
+  padding: [16.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      Text(
+        text: "Select an option:",
+        style: { fontSize: 16.0, fontWeight: "bold", color: 0xFF212121 },
+      ),
+      SizedBox(height: 12.0),
+      Row(
+        mainAxisAlignment: "spaceEvenly",
+        children: [
+          Expanded(
+            child: OptionBox(
+              optionId: "option1",
+              value: data.option1Value,
+              label: data.option1Label,
+              iconCode: data.option1Icon,
+              isSelected: switch data.selectedOption {
+                "option1": true,
+                default: false,
+              },
+            ),
+          ),
+          Expanded(
+            child: OptionBox(
+              optionId: "option2",
+              value: data.option2Value,
+              label: data.option2Label,
+              iconCode: data.option2Icon,
+              isSelected: switch data.selectedOption {
+                "option2": true,
+                default: false,
+              },
+            ),
+          ),
+          Expanded(
+            child: OptionBox(
+              optionId: "option3",
+              value: data.option3Value,
+              label: data.option3Label,
+              iconCode: data.option3Icon,
+              isSelected: switch data.selectedOption {
+                "option3": true,
+                default: false,
+              },
+            ),
+          ),
+        ],
+      ),
+      SizedBox(height: 16.0),
+      Center(
+        child: ElevatedButton(
+          onPressed: event "options_submit" {
+            selectedOption: data.selectedOption,
+          },
+          child: Padding(
+            padding: [16.0, 8.0],
+            child: Text(
+              text: "Submit Options",
+              style: { fontSize: 14.0, color: 0xFFFFFFFF },
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
+// Single checkbox row - uses ColoredBox for reliable background
+widget CheckboxRow = InkWell(
+  onTap: event "checkbox_toggled" {
+    checkboxId: args.checkboxId,
+    currentValue: args.isChecked,
+  },
+  child: Padding(
+    padding: [8.0, 12.0],
+    child: Row(
+      children: [
+        // Checkbox indicator using ColoredBox for reliable rendering
+        ClipRRect(
+          borderRadius: [4.0],
+          child: ColoredBox(
+            color: switch args.isChecked {
+              true: 0xFF1976D2,
+              default: 0xFFE0E0E0,
+            },
+            child: SizedBox(
+              height: 24.0,
+              width: 24.0,
+              child: switch args.isChecked {
+                true: Center(child: Icon(icon: 0xe156, fontFamily: "MaterialIcons", size: 18.0, color: 0xFFFFFFFF)),
+                default: SizedBox(),
+              },
+            ),
+          ),
+        ),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Text(
+            text: args.label,
+            style: { fontSize: 14.0, color: 0xFF424242 },
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+// Checkboxes content - 3 checkboxes with submit button
+widget CheckboxesContent = Padding(
+  padding: [16.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    mainAxisSize: "min",
+    children: [
+      Text(
+        text: "Select items:",
+        style: { fontSize: 16.0, fontWeight: "bold", color: 0xFF212121 },
+      ),
+      SizedBox(height: 8.0),
+      CheckboxRow(
+        checkboxId: "checkbox1",
+        label: data.checkbox1Label,
+        isChecked: data.checkbox1Checked,
+      ),
+      CheckboxRow(
+        checkboxId: "checkbox2",
+        label: data.checkbox2Label,
+        isChecked: data.checkbox2Checked,
+      ),
+      CheckboxRow(
+        checkboxId: "checkbox3",
+        label: data.checkbox3Label,
+        isChecked: data.checkbox3Checked,
+      ),
+      SizedBox(height: 12.0),
+      Center(
+        child: ElevatedButton(
+          onPressed: event "checkboxes_submit" {
+            checkbox1: data.checkbox1Checked,
+            checkbox2: data.checkbox2Checked,
+            checkbox3: data.checkbox3Checked,
+          },
+          child: Padding(
+            padding: [16.0, 8.0],
+            child: Text(
+              text: "Submit Checkboxes",
+              style: { fontSize: 14.0, color: 0xFFFFFFFF },
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
+// Composite bottom nav with Options and Checkboxes pages
+widget CompositeBottomNav = Column(
+  children: [
+    // Content area - switches based on selectedIndex
+    Expanded(
+      child: switch data.selectedIndex {
+        0: OptionsContent(),
+        1: CheckboxesContent(),
+        default: Center(
+          child: Text(
+            text: "Unknown page",
+            style: { fontSize: 16.0, color: 0xFF757575 },
+          ),
+        ),
+      },
+    ),
+    // Bottom navigation bar
+    BottomNavigationBar(
+      currentIndex: data.selectedIndex,
+      onTap: event "composite_nav_tapped" { },
+      item0Label: "Options",
+      item0Icon: 0xe8b8,
+      item1Label: "Checkboxes",
+      item1Icon: 0xe834,
+    ),
+  ],
+);

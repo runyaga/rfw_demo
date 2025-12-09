@@ -1,0 +1,34 @@
+// StatusBadge widget (DESIGN.md Example 3)
+// Demonstrates conditional logic with switch expression
+
+import core;
+import material;
+
+widget StatusBadge = Container(
+  padding: [8.0, 16.0],
+  decoration: {
+    color: switch data.status {
+      "active": 0xFF4CAF50,
+      "inactive": 0xFF9E9E9E,
+      "pending": 0xFFFFC107,
+      default: 0xFF9E9E9E,
+    },
+    borderRadius: [16.0],
+  },
+  child: Text(
+    text: switch data.status {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      default: "Unknown",
+    },
+    style: {
+      fontSize: 12.0,
+      fontWeight: "bold",
+      color: switch data.status {
+        "pending": 0xFF333333,
+        default: 0xFFFFFFFF,
+      },
+    },
+  ),
+);

@@ -1,0 +1,80 @@
+// FeedItemAd - Advertisement item for polymorphic feed
+// Part of Example 9: Polymorphic List
+
+import core;
+import material;
+
+widget FeedItemAd = Card(
+  margin: [8.0, 4.0],
+  color: 0xFFFFF8E1,
+  child: Padding(
+    padding: [12.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      children: [
+        // Sponsored label
+        Row(
+          children: [
+            Container(
+              padding: [4.0, 8.0],
+              decoration: {
+                color: 0xFFFFB300,
+                borderRadius: [4.0],
+              },
+              child: Text(
+                text: "Sponsored",
+                style: { color: 0xFFFFFFFF, fontSize: 10.0, fontWeight: "bold" },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12.0),
+        // Ad content
+        Row(
+          children: [
+            Container(
+              width: 80.0,
+              height: 80.0,
+              decoration: {
+                color: 0xFFFFE082,
+                borderRadius: [8.0],
+              },
+              child: Center(
+                child: Icon(icon: 0xe8e1, size: 40.0, color: 0xFFFFB300),
+              ),
+            ),
+            SizedBox(width: 12.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: "start",
+                children: [
+                  Text(
+                    text: data.headline,
+                    style: { fontWeight: "bold", fontSize: 16.0, color: 0xFF212121 },
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    text: data.description,
+                    style: { color: 0xFF757575, fontSize: 13.0 },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12.0),
+        // CTA button
+        SizedBox(
+          width: 1000.0,
+          child: ElevatedButton(
+            onPressed: event "ad_click" {
+              adId: data.adId,
+              campaign: data.campaign,
+            },
+            child: Text(text: data.ctaText),
+          ),
+        ),
+      ],
+    ),
+  ),
+);

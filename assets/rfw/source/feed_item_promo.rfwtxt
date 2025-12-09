@@ -1,0 +1,63 @@
+// FeedItemPromo - Promotional banner for polymorphic feed
+// Part of Example 9: Polymorphic List
+
+import core;
+import material;
+
+widget FeedItemPromo = Card(
+  margin: [8.0, 4.0],
+  color: 0xFF7B1FA2,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Icon(icon: 0xe838, size: 32.0, color: 0xFFFFFFFF),
+            SizedBox(width: 12.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: "start",
+                children: [
+                  Text(
+                    text: data.title,
+                    style: { color: 0xFFFFFFFF, fontWeight: "bold", fontSize: 18.0 },
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    text: data.subtitle,
+                    style: { color: 0xFFE1BEE7, fontSize: 14.0 },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          children: [
+            Container(
+              padding: [8.0, 16.0],
+              decoration: {
+                color: 0x33FFFFFF,
+                borderRadius: [20.0],
+              },
+              child: Text(
+                text: data.code,
+                style: { color: 0xFFFFFFFF, fontWeight: "bold", fontSize: 16.0 },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: event "promo_claim" {
+                promoId: data.promoId,
+                code: data.code,
+              },
+              child: Text(text: "Claim Now"),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);

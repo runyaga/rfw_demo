@@ -1,0 +1,51 @@
+// OfferBanner - Special offer banner for Dashboard
+// Part of Example 10: Dashboard (conditional display)
+
+import core;
+import material;
+
+widget OfferBanner = Card(
+  margin: [0.0, 8.0],
+  color: 0xFFE8F5E9,
+  child: Padding(
+    padding: [12.0],
+    child: Row(
+      children: [
+        Container(
+          padding: [10.0],
+          decoration: {
+            color: 0xFF4CAF50,
+            borderRadius: [8.0],
+          },
+          child: Icon(icon: 0xe8f6, size: 24.0, color: 0xFFFFFFFF),
+        ),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: "start",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: data.title,
+                style: { fontWeight: "bold", fontSize: 15.0, color: 0xFF1B5E20 },
+              ),
+              SizedBox(height: 2.0),
+              Text(
+                text: data.description,
+                style: { color: 0xFF424242, fontSize: 12.0 },
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 8.0),
+        ElevatedButton(
+          onPressed: event "offer_claim" {
+            offerId: data.offerId,
+            code: data.code,
+          },
+          child: Text(text: "Claim"),
+        ),
+      ],
+    ),
+  ),
+);

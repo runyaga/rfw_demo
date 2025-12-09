@@ -1,0 +1,196 @@
+// Tabbed Content widget - Horizontal tabs with switchable content
+// Per Stage 9: Extended Widget Library
+//
+// Data Contract:
+// {
+//   selectedIndex: 0,
+//   tabs: [
+//     { label: "Tab 1", iconCode: 0xe88a },
+//     { label: "Tab 2", iconCode: 0xe8b6 },
+//   ],
+//   content: "Content for selected tab"
+// }
+//
+// Events:
+// - 'tab_selected' with { index: int, label: string }
+//
+// Note: TabController state is managed by the host app.
+// The RFW widget displays the current state and emits selection events.
+
+import core;
+import material;
+
+// Individual tab button
+// Note: args.index and args.label reference the parameters passed to this widget
+widget TabButton = InkWell(
+  onTap: event "tab_selected" {
+    index: args.index,
+    label: args.label,
+  },
+  child: Container(
+    padding: [16.0, 12.0],
+    decoration: {
+      border: {
+        bottom: {
+          color: switch args.isSelected {
+            true: 0xFF1976D2,
+            default: 0x00000000,
+          },
+          width: switch args.isSelected {
+            true: 2.0,
+            default: 0.0,
+          },
+        },
+      },
+    },
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        switch args.iconCode {
+          0: SizedBox(),
+          default: Icon(
+            icon: args.iconCode,
+            size: 20.0,
+            color: switch args.isSelected {
+              true: 0xFF1976D2,
+              default: 0xFF757575,
+            },
+          ),
+        },
+        switch args.iconCode {
+          0: SizedBox(),
+          default: SizedBox(width: 8.0),
+        },
+        Text(
+          text: args.label,
+          style: {
+            fontSize: 14.0,
+            fontWeight: switch args.isSelected {
+              true: "w600",
+              default: "normal",
+            },
+            color: switch args.isSelected {
+              true: 0xFF1976D2,
+              default: 0xFF757575,
+            },
+          },
+        ),
+      ],
+    ),
+  ),
+);
+
+// Simple two-tab layout (most common case)
+widget TwoTabLayout = Column(
+  crossAxisAlignment: "stretch",
+  children: [
+    // Tab bar
+    Container(
+      decoration: {
+        color: 0xFFFFFFFF,
+        border: {
+          bottom: { color: 0xFFE0E0E0, width: 1.0 },
+        },
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: TabButton(
+              index: 0,
+              label: data.tab1Label,
+              iconCode: data.tab1Icon,
+              isSelected: switch data.selectedIndex {
+                0: true,
+                default: false,
+              },
+            ),
+          ),
+          Expanded(
+            child: TabButton(
+              index: 1,
+              label: data.tab2Label,
+              iconCode: data.tab2Icon,
+              isSelected: switch data.selectedIndex {
+                1: true,
+                default: false,
+              },
+            ),
+          ),
+        ],
+      ),
+    ),
+    // Content area
+    Expanded(
+      child: Container(
+        padding: [16.0],
+        child: Text(
+          text: data.content,
+          style: { fontSize: 14.0, color: 0xFF424242, height: 1.5 },
+        ),
+      ),
+    ),
+  ],
+);
+
+// Three-tab layout
+widget ThreeTabLayout = Column(
+  crossAxisAlignment: "stretch",
+  children: [
+    // Tab bar
+    Container(
+      decoration: {
+        color: 0xFFFFFFFF,
+        border: {
+          bottom: { color: 0xFFE0E0E0, width: 1.0 },
+        },
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: TabButton(
+              index: 0,
+              label: data.tab1Label,
+              iconCode: data.tab1Icon,
+              isSelected: switch data.selectedIndex {
+                0: true,
+                default: false,
+              },
+            ),
+          ),
+          Expanded(
+            child: TabButton(
+              index: 1,
+              label: data.tab2Label,
+              iconCode: data.tab2Icon,
+              isSelected: switch data.selectedIndex {
+                1: true,
+                default: false,
+              },
+            ),
+          ),
+          Expanded(
+            child: TabButton(
+              index: 2,
+              label: data.tab3Label,
+              iconCode: data.tab3Icon,
+              isSelected: switch data.selectedIndex {
+                2: true,
+                default: false,
+              },
+            ),
+          ),
+        ],
+      ),
+    ),
+    // Content area
+    Expanded(
+      child: Container(
+        padding: [16.0],
+        child: Text(
+          text: data.content,
+          style: { fontSize: 14.0, color: 0xFF424242, height: 1.5 },
+        ),
+      ),
+    ),
+  ],
+);

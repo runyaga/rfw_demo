@@ -1,0 +1,63 @@
+// MetricCard - Dashboard metric display widget
+// Part of Example 10: Dashboard
+
+import core;
+import material;
+
+widget MetricCard = Card(
+  elevation: 2.0,
+  color: 0xFFFFFFFF,
+  child: Padding(
+    padding: [12.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      mainAxisSize: "min",
+      children: [
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          children: [
+            Container(
+              padding: [6.0],
+              decoration: {
+                color: data.iconBackgroundColor,
+                borderRadius: [6.0],
+              },
+              child: Icon(
+                icon: data.iconCode,
+                size: 20.0,
+                color: data.iconColor,
+              ),
+            ),
+            switch data.trend {
+              "up": Icon(icon: 0xe5d8, size: 18.0, color: 0xFF4CAF50),
+              "down": Icon(icon: 0xe5db, size: 18.0, color: 0xFFF44336),
+              default: SizedBox(width: 18.0, height: 18.0),
+            },
+          ],
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: data.value,
+          style: { fontWeight: "bold", fontSize: 20.0, color: 0xFF212121 },
+        ),
+        SizedBox(height: 2.0),
+        Text(
+          text: data.label,
+          style: { color: 0xFF757575, fontSize: 11.0 },
+        ),
+        SizedBox(height: 4.0),
+        Text(
+          text: data.change,
+          style: {
+            fontSize: 11.0,
+            color: switch data.trend {
+              "up": 0xFF4CAF50,
+              "down": 0xFFF44336,
+              default: 0xFF757575,
+            },
+          },
+        ),
+      ],
+    ),
+  ),
+);

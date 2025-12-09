@@ -1,0 +1,69 @@
+// ProductCard - Composite widget with slot pattern (Example 8)
+// Demonstrates reusable card with customizable content slot
+
+import core;
+import material;
+
+widget ProductCard = Card(
+  elevation: 4.0,
+  margin: [8.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    children: [
+      // Product image
+      Container(
+        height: 120.0,
+        color: 0xFFE0E0E0,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: "center",
+            children: [
+              Icon(icon: 0xe57f, size: 48.0, color: 0xFF9E9E9E),
+              SizedBox(height: 8.0),
+              Text(
+                text: data.imageLabel,
+                style: { color: 0xFF9E9E9E, fontSize: 12.0 },
+              ),
+            ],
+          ),
+        ),
+      ),
+      // Product details
+      Padding(
+        padding: [16.0],
+        child: Column(
+          crossAxisAlignment: "start",
+          children: [
+            Text(
+              text: data.title,
+              style: { fontWeight: "bold", fontSize: 16.0, color: 0xFF212121 },
+            ),
+            SizedBox(height: 4.0),
+            Text(
+              text: data.subtitle,
+              style: { color: 0xFF757575, fontSize: 14.0 },
+            ),
+            SizedBox(height: 8.0),
+            Row(
+              mainAxisAlignment: "spaceBetween",
+              children: [
+                Text(
+                  text: data.price,
+                  style: { fontWeight: "bold", fontSize: 18.0, color: 0xFF4CAF50 },
+                ),
+                // Action button slot - can be customized by caller
+                ElevatedButton(
+                  onPressed: event "product_action" {
+                    productId: data.productId,
+                    action: data.actionType,
+                  },
+                  child: Text(text: data.actionLabel),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+);

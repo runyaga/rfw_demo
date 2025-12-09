@@ -1,0 +1,98 @@
+// Email Input (Example 7)
+// Demonstrates high-frequency text input handling.
+//
+// Per DESIGN.md Example 7 Analysis:
+// "TextField represents a significant challenge. Native Flutter uses
+// TextEditingController. In RFW, we must often treat it as a controlled
+// component (like in React). The onChanged event sends the text to the
+// client, which validates it and updates DynamicContent (potentially
+// filling emailError)."
+//
+// NOTE: High-frequency events require debouncing on the client side.
+// See lib/core/rfw/runtime/debouncer.dart
+//
+// Events fired:
+// - 'email_changed' with { value: String }
+// - 'email_submitted' with { value: String }
+
+import core;
+import material;
+
+widget EmailInput = TextField(
+  decoration: {
+    labelText: "Email Address",
+    hintText: "user@example.com",
+    errorText: data.emailError,
+    prefixIcon: 0xE0BE,
+  },
+  keyboardType: "emailAddress",
+  onChanged: event "email_changed" {
+    value: data.email,
+  },
+  onSubmitted: event "email_submitted" {
+    value: data.email,
+  },
+);
+
+// A more complete form field with validation state
+widget EmailFormField = Column(
+  crossAxisAlignment: "stretch",
+  children: [
+    TextField(
+      decoration: {
+        labelText: data.label,
+        hintText: data.hintText,
+        errorText: data.errorText,
+        helperText: data.helperText,
+        prefixIcon: 0xE0BE,
+        suffixIcon: switch data.validationState {
+          "valid": 0xE86C,
+          "invalid": 0xE000,
+          default: 0,
+        },
+      },
+      keyboardType: "emailAddress",
+      onChanged: event "text_changed" {
+        fieldId: data.fieldId,
+        value: data.currentValue,
+      },
+      onSubmitted: event "text_submitted" {
+        fieldId: data.fieldId,
+        value: data.currentValue,
+      },
+    ),
+    switch data.validationState {
+      "valid": Padding(
+        padding: [12.0, 4.0, 0.0, 0.0],
+        child: Text(
+          text: "Valid email address",
+          style: {
+            fontSize: 12.0,
+            color: 0xFF4CAF50,
+          },
+        ),
+      ),
+      default: SizedBox(height: 0.0),
+    },
+  ],
+);
+
+// Generic text input for other use cases
+widget TextInput = TextField(
+  decoration: {
+    labelText: data.label,
+    hintText: data.hint,
+    errorText: data.error,
+    prefixIcon: data.prefixIcon,
+  },
+  keyboardType: data.keyboardType,
+  obscureText: data.obscureText,
+  onChanged: event "text_changed" {
+    fieldId: data.fieldId,
+    value: data.currentValue,
+  },
+  onSubmitted: event "text_submitted" {
+    fieldId: data.fieldId,
+    value: data.currentValue,
+  },
+);

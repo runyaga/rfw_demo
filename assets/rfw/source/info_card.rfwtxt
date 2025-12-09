@@ -1,0 +1,35 @@
+// InfoCard widget (DESIGN.md Example 2)
+// Demonstrates dynamic data binding with title and description
+
+import core;
+import material;
+
+widget InfoCard = Card(
+  elevation: 4.0,
+  margin: [16.0],
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: data.title,
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF333333,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: data.description,
+          style: {
+            fontSize: 14.0,
+            color: 0xFF666666,
+          },
+        ),
+      ],
+    ),
+  ),
+);

@@ -1,0 +1,58 @@
+// UserList widget (DESIGN.md Example 4)
+// Demonstrates loops with ...for syntax
+// Note: Reference GitHub Issue #161544 regarding loop limitations
+
+import core;
+import material;
+
+widget UserList = ListView(
+  children: [
+    ...for user in data.users:
+      UserListItem(user: user),
+  ],
+);
+
+widget UserListItem = ListTile(
+  leading: CircleAvatar(
+    backgroundColor: 0xFF2196F3,
+    child: Text(
+      text: args.user.name,
+      style: {
+        fontSize: 16.0,
+        color: 0xFFFFFFFF,
+      },
+    ),
+  ),
+  title: Text(text: args.user.name),
+  subtitle: Text(text: args.user.email),
+  trailing: StatusBadge(status: args.user.status),
+);
+
+widget StatusBadge = Container(
+  padding: [4.0, 8.0],
+  decoration: {
+    color: switch args.status {
+      "active": 0xFF4CAF50,
+      "inactive": 0xFF9E9E9E,
+      "pending": 0xFFFFC107,
+      default: 0xFF9E9E9E,
+    },
+    borderRadius: [12.0],
+  },
+  child: Text(
+    text: switch args.status {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      default: "Unknown",
+    },
+    style: {
+      fontSize: 10.0,
+      fontWeight: "bold",
+      color: switch args.status {
+        "pending": 0xFF333333,
+        default: 0xFFFFFFFF,
+      },
+    },
+  ),
+);

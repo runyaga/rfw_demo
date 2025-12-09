@@ -1,0 +1,131 @@
+// Breadcrumbs widget - Navigation path display
+// Per Stage 9: Extended Widget Library
+//
+// Data Contract:
+// {
+//   items: [
+//     { label: "Home", route: "/" },
+//     { label: "Products", route: "/products" },
+//     { label: "Widget X", route: null }  // Current page, not clickable
+//   ],
+//   separator: " > "  // Optional, defaults to " > "
+// }
+//
+// Events:
+// - 'breadcrumb_tap' with { route: string, label: string, index: int }
+
+import core;
+import material;
+
+// Single breadcrumb item (clickable)
+widget BreadcrumbLink = InkWell(
+  onTap: event "breadcrumb_tap" {
+    route: data.route,
+    label: data.label,
+    index: data.index,
+  },
+  child: Padding(
+    padding: [4.0, 8.0],
+    child: Text(
+      text: data.label,
+      style: {
+        fontSize: 14.0,
+        color: 0xFF1976D2,
+      },
+    ),
+  ),
+);
+
+// Single breadcrumb item (current page, not clickable)
+widget BreadcrumbCurrent = Padding(
+  padding: [4.0, 8.0],
+  child: Text(
+    text: data.label,
+    style: {
+      fontSize: 14.0,
+      color: 0xFF424242,
+      fontWeight: "w500",
+    },
+  ),
+);
+
+// Breadcrumb separator
+widget BreadcrumbSeparator = Padding(
+  padding: [0.0, 8.0],
+  child: Text(
+    text: data.separator,
+    style: {
+      fontSize: 14.0,
+      color: 0xFF9E9E9E,
+    },
+  ),
+);
+
+// Two-level breadcrumb (Home > Current)
+widget TwoLevelBreadcrumb = Row(
+  children: [
+    BreadcrumbLink(label: data.item1Label, route: data.item1Route, index: 0),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbCurrent(label: data.item2Label),
+  ],
+);
+
+// Three-level breadcrumb (Home > Category > Current)
+widget ThreeLevelBreadcrumb = Row(
+  children: [
+    BreadcrumbLink(label: data.item1Label, route: data.item1Route, index: 0),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbLink(label: data.item2Label, route: data.item2Route, index: 1),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbCurrent(label: data.item3Label),
+  ],
+);
+
+// Four-level breadcrumb
+widget FourLevelBreadcrumb = Row(
+  children: [
+    BreadcrumbLink(label: data.item1Label, route: data.item1Route, index: 0),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbLink(label: data.item2Label, route: data.item2Route, index: 1),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbLink(label: data.item3Label, route: data.item3Route, index: 2),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbCurrent(label: data.item4Label),
+  ],
+);
+
+// Breadcrumb with icon prefix
+widget BreadcrumbWithIcon = Row(
+  children: [
+    Icon(icon: 0xe88a, size: 18.0, color: 0xFF757575),
+    SizedBox(width: 8.0),
+    BreadcrumbLink(label: data.item1Label, route: data.item1Route, index: 0),
+    BreadcrumbSeparator(separator: data.separator),
+    BreadcrumbCurrent(label: data.item2Label),
+  ],
+);
+
+// Compact breadcrumb (smaller text)
+widget CompactBreadcrumb = Row(
+  children: [
+    InkWell(
+      onTap: event "breadcrumb_tap" {
+        route: data.item1Route,
+        label: data.item1Label,
+        index: 0,
+      },
+      child: Text(
+        text: data.item1Label,
+        style: { fontSize: 12.0, color: 0xFF1976D2 },
+      ),
+    ),
+    Text(
+      text: data.separator,
+      style: { fontSize: 12.0, color: 0xFF9E9E9E },
+    ),
+    Text(
+      text: data.item2Label,
+      style: { fontSize: 12.0, color: 0xFF616161, fontWeight: "w500" },
+    ),
+  ],
+);

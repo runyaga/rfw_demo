@@ -1,0 +1,53 @@
+// Action Button (Example 5)
+// Demonstrates event dispatching from RFW to native code.
+//
+// Events fired:
+// - 'button_pressed' with { action: String, source: String }
+
+import core;
+import material;
+
+widget ActionButton = ElevatedButton(
+  onPressed: event "button_pressed" {
+    action: data.action,
+    source: data.source,
+  },
+  child: Padding(
+    padding: [12.0, 8.0],
+    child: Text(
+      text: data.buttonText,
+      style: {
+        fontSize: 16.0,
+        fontWeight: "bold",
+      },
+    ),
+  ),
+);
+
+// A variant with icon
+widget ActionButtonWithIcon = ElevatedButton(
+  onPressed: event "button_pressed" {
+    action: data.action,
+    source: data.source,
+  },
+  child: Padding(
+    padding: [12.0, 8.0],
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        Icon(
+          icon: data.iconCode,
+          size: 20.0,
+        ),
+        SizedBox(width: 8.0),
+        Text(
+          text: data.buttonText,
+          style: {
+            fontSize: 16.0,
+            fontWeight: "bold",
+          },
+        ),
+      ],
+    ),
+  ),
+);

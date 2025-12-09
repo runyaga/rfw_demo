@@ -1,0 +1,274 @@
+// Skeleton Loader widget - Loading placeholder patterns
+// Per Stage 9: Extended Widget Library
+//
+// Note: RFW doesn't support animations natively, so these are static
+// placeholder shapes. The host app can wrap them in shimmer effects
+// or show/hide based on loading state.
+//
+// Data Contract:
+// {
+//   isLoading: true,  // Host controls visibility
+// }
+
+import core;
+import material;
+
+// Basic rectangular skeleton block
+widget SkeletonBlock = ColoredBox(
+  color: 0xFFBDBDBD,
+  child: SizedBox(
+    height: args.height,
+    width: args.width,
+  ),
+);
+
+// Circular skeleton (for avatars)
+widget SkeletonCircle = ClipRRect(
+  borderRadius: [50.0],
+  child: ColoredBox(
+    color: 0xFFBDBDBD,
+    child: SizedBox(
+      height: args.size,
+      width: args.size,
+    ),
+  ),
+);
+
+// Text line skeleton
+widget SkeletonLine = ColoredBox(
+  color: 0xFFBDBDBD,
+  child: SizedBox(
+    height: 14.0,
+    width: args.width,
+  ),
+);
+
+// Card skeleton - mimics a typical card layout
+widget SkeletonCard = Card(
+  elevation: 1.0,
+  margin: [8.0],
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      children: [
+        // Image placeholder
+        ClipRRect(
+          borderRadius: [4.0],
+          child: ColoredBox(
+            color: 0xFFBDBDBD,
+            child: SizedBox(height: 120.0, width: 1000.0),
+          ),
+        ),
+        SizedBox(height: 12.0),
+        // Title line
+        ColoredBox(
+          color: 0xFFBDBDBD,
+          child: SizedBox(height: 16.0, width: 180.0),
+        ),
+        SizedBox(height: 8.0),
+        // Subtitle line
+        ColoredBox(
+          color: 0xFFD0D0D0,
+          child: SizedBox(height: 14.0, width: 120.0),
+        ),
+        SizedBox(height: 12.0),
+        // Description lines
+        ColoredBox(
+          color: 0xFFD0D0D0,
+          child: SizedBox(height: 12.0, width: 300.0),
+        ),
+        SizedBox(height: 6.0),
+        ColoredBox(
+          color: 0xFFD0D0D0,
+          child: SizedBox(height: 12.0, width: 200.0),
+        ),
+      ],
+    ),
+  ),
+);
+
+// List item skeleton - mimics a list tile
+widget SkeletonListItem = Padding(
+  padding: [16.0, 12.0],
+  child: Row(
+    children: [
+      // Avatar (circular)
+      ClipRRect(
+        borderRadius: [24.0],
+        child: ColoredBox(
+          color: 0xFFBDBDBD,
+          child: SizedBox(height: 48.0, width: 48.0),
+        ),
+      ),
+      SizedBox(width: 16.0),
+      // Text content
+      Expanded(
+        child: Column(
+          crossAxisAlignment: "start",
+          children: [
+            ColoredBox(
+              color: 0xFFBDBDBD,
+              child: SizedBox(height: 14.0, width: 140.0),
+            ),
+            SizedBox(height: 8.0),
+            ColoredBox(
+              color: 0xFFD0D0D0,
+              child: SizedBox(height: 12.0, width: 200.0),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+);
+
+// Profile skeleton - user profile layout
+widget SkeletonProfile = Column(
+  children: [
+    SizedBox(height: 24.0),
+    // Avatar
+    Container(
+      height: 80.0,
+      width: 80.0,
+      decoration: {
+        color: 0xFFE0E0E0,
+        borderRadius: [40.0],
+      },
+    ),
+    SizedBox(height: 16.0),
+    // Name
+    Container(
+      height: 18.0,
+      width: 120.0,
+      decoration: {
+        color: 0xFFE0E0E0,
+        borderRadius: [2.0],
+      },
+    ),
+    SizedBox(height: 8.0),
+    // Email/subtitle
+    Container(
+      height: 14.0,
+      width: 160.0,
+      decoration: {
+        color: 0xFFEEEEEE,
+        borderRadius: [2.0],
+      },
+    ),
+    SizedBox(height: 24.0),
+    // Stats row
+    Row(
+      mainAxisAlignment: "spaceEvenly",
+      children: [
+        Column(
+          children: [
+            Container(
+              height: 20.0,
+              width: 40.0,
+              decoration: { color: 0xFFE0E0E0, borderRadius: [2.0] },
+            ),
+            SizedBox(height: 4.0),
+            Container(
+              height: 12.0,
+              width: 50.0,
+              decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              height: 20.0,
+              width: 40.0,
+              decoration: { color: 0xFFE0E0E0, borderRadius: [2.0] },
+            ),
+            SizedBox(height: 4.0),
+            Container(
+              height: 12.0,
+              width: 50.0,
+              decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              height: 20.0,
+              width: 40.0,
+              decoration: { color: 0xFFE0E0E0, borderRadius: [2.0] },
+            ),
+            SizedBox(height: 4.0),
+            Container(
+              height: 12.0,
+              width: 50.0,
+              decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
+// Article skeleton - blog post / article layout
+widget SkeletonArticle = Padding(
+  padding: [16.0],
+  child: Column(
+    crossAxisAlignment: "start",
+    children: [
+      // Header image
+      Container(
+        height: 180.0,
+        decoration: {
+          color: 0xFFE0E0E0,
+          borderRadius: [8.0],
+        },
+      ),
+      SizedBox(height: 16.0),
+      // Title
+      Container(
+        height: 24.0,
+        width: 280.0,
+        decoration: {
+          color: 0xFFE0E0E0,
+          borderRadius: [2.0],
+        },
+      ),
+      SizedBox(height: 8.0),
+      // Meta info
+      Row(
+        children: [
+          Container(
+            height: 12.0,
+            width: 80.0,
+            decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+          ),
+          SizedBox(width: 16.0),
+          Container(
+            height: 12.0,
+            width: 60.0,
+            decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+          ),
+        ],
+      ),
+      SizedBox(height: 16.0),
+      // Paragraph lines
+      Container(
+        height: 14.0,
+        decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+      ),
+      SizedBox(height: 6.0),
+      Container(
+        height: 14.0,
+        decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+      ),
+      SizedBox(height: 6.0),
+      Container(
+        height: 14.0,
+        width: 240.0,
+        decoration: { color: 0xFFEEEEEE, borderRadius: [2.0] },
+      ),
+    ],
+  ),
+);

@@ -1,0 +1,93 @@
+// FeedItemPost - Standard post item for polymorphic feed
+// Part of Example 9: Polymorphic List
+
+import core;
+import material;
+
+widget FeedItemPost = Card(
+  margin: [8.0, 4.0],
+  child: Padding(
+    padding: [12.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      children: [
+        // Author row
+        Row(
+          children: [
+            Container(
+              width: 40.0,
+              height: 40.0,
+              decoration: {
+                color: 0xFF2196F3,
+                borderRadius: [20.0],
+              },
+              child: Center(
+                child: Text(
+                  text: data.authorInitial,
+                  style: { color: 0xFFFFFFFF, fontWeight: "bold" },
+                ),
+              ),
+            ),
+            SizedBox(width: 12.0),
+            Column(
+              crossAxisAlignment: "start",
+              children: [
+                Text(
+                  text: data.authorName,
+                  style: { fontWeight: "bold", fontSize: 14.0, color: 0xFF212121 },
+                ),
+                Text(
+                  text: data.timestamp,
+                  style: { color: 0xFF9E9E9E, fontSize: 12.0 },
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 12.0),
+        // Post content
+        Text(
+          text: data.content,
+          style: { fontSize: 14.0, color: 0xFF424242 },
+        ),
+        SizedBox(height: 12.0),
+        // Action row
+        Row(
+          mainAxisAlignment: "spaceAround",
+          children: [
+            TextButton(
+              onPressed: event "post_like" { postId: data.postId },
+              child: Row(
+                children: [
+                  Icon(icon: 0xe87d, size: 18.0, color: 0xFF757575),
+                  SizedBox(width: 4.0),
+                  Text(text: data.likeCount, style: { color: 0xFF757575, fontSize: 12.0 }),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: event "post_comment" { postId: data.postId },
+              child: Row(
+                children: [
+                  Icon(icon: 0xe0bf, size: 18.0, color: 0xFF757575),
+                  SizedBox(width: 4.0),
+                  Text(text: data.commentCount, style: { color: 0xFF757575, fontSize: 12.0 }),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: event "post_share" { postId: data.postId },
+              child: Row(
+                children: [
+                  Icon(icon: 0xe80d, size: 18.0, color: 0xFF757575),
+                  SizedBox(width: 4.0),
+                  Text(text: "Share", style: { color: 0xFF757575, fontSize: 12.0 }),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);

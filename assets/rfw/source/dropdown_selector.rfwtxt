@@ -1,0 +1,130 @@
+// Dropdown Selector widget - Selection from a list of options
+// Per Stage 9: Extended Widget Library
+//
+// Note: RFW DropdownMenu widget is registered in material_registry.dart
+// This file provides RFW wrapper widgets that use DropdownMenu.
+//
+// Data Contract:
+// {
+//   selectedValue: "option1",
+//   label: "Select an option",
+//   optionCount: 3,
+//   options: [
+//     { value: "option1", label: "Option 1" },
+//     { value: "option2", label: "Option 2" },
+//     { value: "option3", label: "Option 3" },
+//   ]
+// }
+//
+// Events:
+// - 'dropdown_selected' with { value: string }
+
+import core;
+import material;
+
+// Simple dropdown with label
+widget DropdownSelector = Column(
+  crossAxisAlignment: "start",
+  mainAxisSize: "min",
+  children: [
+    Text(
+      text: data.label,
+      style: { fontSize: 14.0, color: 0xFF424242, fontWeight: "w500" },
+    ),
+    SizedBox(height: 8.0),
+    DropdownMenu(
+      selectedValue: data.selectedValue,
+      optionCount: data.optionCount,
+      options: data.options,
+      width: data.width,
+      onSelected: event "dropdown_selected" { },
+    ),
+  ],
+);
+
+// Compact inline dropdown (no label)
+widget InlineDropdown = DropdownMenu(
+  selectedValue: data.selectedValue,
+  optionCount: data.optionCount,
+  options: data.options,
+  width: data.width,
+  onSelected: event "dropdown_selected" { },
+);
+
+// Dropdown in a card container
+widget DropdownCard = Card(
+  elevation: 1.0,
+  margin: [8.0],
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "start",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: data.title,
+          style: { fontSize: 16.0, color: 0xFF212121, fontWeight: "bold" },
+        ),
+        SizedBox(height: 4.0),
+        Text(
+          text: data.description,
+          style: { fontSize: 13.0, color: 0xFF757575 },
+        ),
+        SizedBox(height: 12.0),
+        DropdownMenu(
+          selectedValue: data.selectedValue,
+          label: data.label,
+          optionCount: data.optionCount,
+          options: data.options,
+          width: data.width,
+          onSelected: event "dropdown_selected" { },
+        ),
+      ],
+    ),
+  ),
+);
+
+// Two dropdowns side by side (e.g., for date range, filters)
+widget DualDropdown = Row(
+  children: [
+    Expanded(
+      child: Column(
+        crossAxisAlignment: "start",
+        mainAxisSize: "min",
+        children: [
+          Text(
+            text: data.label1,
+            style: { fontSize: 12.0, color: 0xFF757575 },
+          ),
+          SizedBox(height: 4.0),
+          DropdownMenu(
+            selectedValue: data.selectedValue1,
+            optionCount: data.optionCount1,
+            options: data.options1,
+            onSelected: event "dropdown1_selected" { },
+          ),
+        ],
+      ),
+    ),
+    SizedBox(width: 16.0),
+    Expanded(
+      child: Column(
+        crossAxisAlignment: "start",
+        mainAxisSize: "min",
+        children: [
+          Text(
+            text: data.label2,
+            style: { fontSize: 12.0, color: 0xFF757575 },
+          ),
+          SizedBox(height: 4.0),
+          DropdownMenu(
+            selectedValue: data.selectedValue2,
+            optionCount: data.optionCount2,
+            options: data.options2,
+            onSelected: event "dropdown2_selected" { },
+          ),
+        ],
+      ),
+    ),
+  ],
+);

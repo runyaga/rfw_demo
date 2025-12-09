@@ -1,0 +1,19 @@
+// Hello World - First RFW widget (DESIGN.md Example 1)
+// This demonstrates the basic rendering pipeline
+
+import core;
+import material;
+
+widget Root = Container(
+  color: 0xFFFFFFFF,
+  child: Center(
+    child: Text(
+      text: "Hello, Remote World!",
+      style: {
+        fontSize: 24.0,
+        fontWeight: "bold",
+        color: 0xFF000000,
+      },
+    ),
+  ),
+);
