@@ -24,7 +24,7 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
       - run: flutter pub get
-      - run: flutter build web --release --base-href "/rfw_spike/"
+      - run: flutter build web --release --base-href "/rfw_demo/"
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

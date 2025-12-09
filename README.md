@@ -1,9 +1,9 @@
 # RFW Spike
 
-[![CI](https://github.com/runyaga/rfw_spike/actions/workflows/ci.yml/badge.svg)](https://github.com/runyaga/rfw_spike/actions/workflows/ci.yml)
-[![Deploy](https://github.com/runyaga/rfw_spike/actions/workflows/deploy.yml/badge.svg)](https://github.com/runyaga/rfw_spike/actions/workflows/deploy.yml)
+[![CI](https://github.com/runyaga/rfw_demo/actions/workflows/ci.yml/badge.svg)](https://github.com/runyaga/rfw_demo/actions/workflows/ci.yml)
+[![Deploy](https://github.com/runyaga/rfw_demo/actions/workflows/deploy.yml/badge.svg)](https://github.com/runyaga/rfw_demo/actions/workflows/deploy.yml)
 
-**[Live Demo](https://runyaga.github.io/rfw_spike/)**
+**[Live Demo](https://runyaga.github.io/rfw_demo/)**
 
 Remote Flutter Widgets (RFW) implementation spike. Server-driven UI architecture enabling OTA widget updates.
 
