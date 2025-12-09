@@ -67,7 +67,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build web --release --base-href "/rfw_demo/" --no-tree-shake-icons
       - name: Upload web build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: web-build
           path: build/web
