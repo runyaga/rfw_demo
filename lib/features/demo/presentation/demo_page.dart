@@ -198,10 +198,10 @@ class _DemoPageState extends ConsumerState<DemoPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      ref.read(infoCardProvider.notifier).state = const InfoCardData(
+                      ref.read(infoCardProvider.notifier).update(const InfoCardData(
                         title: 'Updated Title!',
                         description: 'The data was updated via Riverpod state management.',
-                      );
+                      ));
                     },
                     child: const Text('Update Card'),
                   ),
@@ -210,10 +210,10 @@ class _DemoPageState extends ConsumerState<DemoPage> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      ref.read(infoCardProvider.notifier).state = const InfoCardData(
+                      ref.read(infoCardProvider.notifier).update(const InfoCardData(
                         title: 'Welcome to RFW',
                         description: 'This card demonstrates dynamic data binding with Remote Flutter Widgets.',
-                      );
+                      ));
                     },
                     child: const Text('Reset'),
                   ),
@@ -255,7 +255,7 @@ class _DemoPageState extends ConsumerState<DemoPage> {
           }
           return user;
         }).toList();
-        ref.read(usersProvider.notifier).state = updatedUsers;
+        ref.read(usersProvider.notifier).update(updatedUsers);
       },
       child: Text('Cycle $name'),
     );
