@@ -9,7 +9,7 @@ Remote Flutter Widgets (RFW) implementation spike. Server-driven UI architecture
 
 ## Status
 
-**Stages:** 9 of 12 complete | **Tests:** 139 passing
+**Stages:** 9 of 12 complete | **Tests:** 135 passing
 
 | Stage | Description | Status |
 |-------|-------------|--------|
@@ -78,7 +78,7 @@ assets/rfw/
 ## Tests
 
 ```bash
-flutter test                           # All (139)
+flutter test                           # All (135)
 flutter test test/rfw/stage9/          # Stage 9 widgets (22)
 flutter test test/rfw/inventory/       # Widget inventory (17)
 flutter test test/core/network/        # Network layer (30)

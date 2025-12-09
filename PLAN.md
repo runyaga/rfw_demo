@@ -1379,7 +1379,7 @@ Update `README.md` with CI status badges:
 
 ### Known Issues / TODOs
 
-- **Golden Tests Disabled in CI:** Golden tests are excluded from CI runs (`--exclude-tags=golden`) due to platform-specific rendering differences between macOS (local) and Linux (CI). Golden images generated on macOS don't match Linux renders. Future work: either regenerate goldens on Linux or implement tolerance-based comparison.
+- **Golden Tests Removed:** Golden tests were removed due to platform-specific rendering differences between macOS and Linux CI runners. Future work: re-implement with tolerance-based comparison or generate goldens on Linux.
 - **Icon Tree Shaking Disabled:** Web builds require `--no-tree-shake-icons` because RFW dynamically creates IconData from integers at runtime.
 
 ### Gate 10: CI/CD Verification
