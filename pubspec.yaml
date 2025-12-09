@@ -39,7 +39,7 @@ dependencies:
   rfw: ^1.0.31
 
   # State management
-  flutter_riverpod: ^2.6.1
+  flutter_riverpod: ^3.0.3
 
   # Network & caching (for Stage 7)
   http: ^1.2.2
