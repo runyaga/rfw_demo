@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Switch;
 import 'package:flutter/material.dart' as material show Switch;
+import 'package:flutter/services.dart';
 import 'package:rfw/rfw.dart';
 
 /// Version constant for Material widgets capability handshake
@@ -143,6 +144,7 @@ LocalWidgetLibrary createAppMaterialWidgets() {
           hintText: source.v<String>(['decoration', 'hintText']),
           errorText: _nullIfEmpty(source.v<String>(['decoration', 'errorText'])),
           helperText: source.v<String>(['decoration', 'helperText']),
+          alignLabelWithHint: source.v<bool>(['decoration', 'alignLabelWithHint']) ?? false,
           prefixIcon: prefixIconCode != null
               ? Icon(IconData(prefixIconCode, fontFamily: 'MaterialIcons'))
               : null,
@@ -152,6 +154,7 @@ LocalWidgetLibrary createAppMaterialWidgets() {
         ),
         keyboardType: _parseKeyboardType(source.v<String>(['keyboardType'])),
         obscureText: source.v<bool>(['obscureText']) ?? false,
+        maxLines: source.v<int>(['maxLines']) ?? 1,
         onChanged: source.handler(
           ['onChanged'],
           (HandlerTrigger trigger) => (String value) => trigger(<String, Object?>{'value': value}),
@@ -527,20 +530,22 @@ TextInputType _parseKeyboardType(String? type) {
 
 /// A TextField that supports controlled value from host.
 /// When initialValue changes, the text field updates.
+/// For multiline fields (maxLines > 1), Shift+Enter inserts a newline.
 class _ControlledTextField extends StatefulWidget {
   final String initialValue;
   final InputDecoration? decoration;
   final TextInputType? keyboardType;
   final bool obscureText;
+  final int maxLines;
   final void Function(String)? onChanged;
   final void Function(String)? onSubmitted;
 
   const _ControlledTextField({
-    super.key,
     required this.initialValue,
     this.decoration,
     this.keyboardType,
     this.obscureText = false,
+    this.maxLines = 1,
     this.onChanged,
     this.onSubmitted,
   });
@@ -551,11 +556,13 @@ class _ControlledTextField extends StatefulWidget {
 
 class _ControlledTextFieldState extends State<_ControlledTextField> {
   late TextEditingController _controller;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
+    _focusNode = FocusNode();
   }
 
   @override
@@ -571,18 +578,52 @@ class _ControlledTextFieldState extends State<_ControlledTextField> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _insertNewline() {
+    final text = _controller.text;
+    final selection = _controller.selection;
+    final newText = text.replaceRange(selection.start, selection.end, '\n');
+    _controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: selection.start + 1),
+    );
+    widget.onChanged?.call(newText);
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    // Only handle for multiline fields
+    if (widget.maxLines <= 1) {
+      return KeyEventResult.ignored;
+    }
+
+    // Check for Shift+Enter
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.enter &&
+        HardwareKeyboard.instance.isShiftPressed) {
+      _insertNewline();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
   }
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      decoration: widget.decoration,
-      keyboardType: widget.keyboardType,
-      obscureText: widget.obscureText,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
+    return Focus(
+      focusNode: _focusNode,
+      onKeyEvent: _handleKeyEvent,
+      child: TextField(
+        controller: _controller,
+        decoration: widget.decoration,
+        keyboardType: widget.maxLines > 1 ? TextInputType.multiline : widget.keyboardType,
+        obscureText: widget.obscureText,
+        maxLines: widget.maxLines,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+      ),
     );
   }
 }

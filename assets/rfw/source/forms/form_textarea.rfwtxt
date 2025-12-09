@@ -1,0 +1,148 @@
+// Form 6: Multi-line Text Area with Character Counter
+// Expandable text area with live char count, color change near limit.
+//
+// Events fired:
+// - 'content_changed' with { value: String, length: int, remaining: int }
+// - 'form_submit' with { formId: String, data: { content: String }, action: String }
+// - 'form_save_draft' with { formId: String, data: { content: String } }
+// - 'form_discard' with { formId: String }
+
+import core;
+import material;
+
+widget TextAreaForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Multi-line Text Area",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Write your post (max 500 characters)",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 4.0),
+        Text(
+          text: "Tip: Press Shift+Enter for new line",
+          style: {
+            fontSize: 12.0,
+            color: 0xFF9E9E9E,
+            fontStyle: "italic",
+          },
+        ),
+        SizedBox(height: 16.0),
+        TextField(
+          value: data.content,
+          decoration: {
+            labelText: "Content",
+            hintText: "What's on your mind?",
+            border: "outline",
+            alignLabelWithHint: true,
+          },
+          maxLines: 5,
+          onChanged: event "content_changed" {
+            value: data.content,
+            length: data.length,
+            remaining: data.remaining,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "min",
+          children: [
+            switch data.nearLimit {
+              true: Text(
+                text: data.charCountDisplay,
+                style: {
+                  fontSize: 12.0,
+                  color: 0xFFF44336,
+                  fontWeight: "bold",
+                },
+              ),
+              default: Text(
+                text: data.charCountDisplay,
+                style: {
+                  fontSize: 12.0,
+                  color: 0xFF757575,
+                },
+              ),
+            },
+            switch data.limitReached {
+              true: Text(
+                text: "Character limit reached",
+                style: {
+                  fontSize: 12.0,
+                  color: 0xFFF44336,
+                },
+              ),
+              default: SizedBox(width: 0.0),
+            },
+          ],
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_discard" {
+                formId: "textarea",
+              },
+              child: Text(
+                text: "Discard",
+                style: { color: 0xFFF44336 },
+              ),
+            ),
+            SizedBox(width: 8.0),
+            OutlinedButton(
+              onPressed: event "form_save_draft" {
+                formId: "textarea",
+                data: { content: data.content },
+              },
+              child: Text(
+                text: "Save Draft",
+                style: { color: 0xFF1976D2 },
+              ),
+            ),
+            SizedBox(width: 8.0),
+            switch data.hasContent {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "textarea",
+                  data: { content: data.content },
+                  action: "post",
+                },
+                child: Text(text: "Post"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "textarea",
+                  reason: "empty_content",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Post"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

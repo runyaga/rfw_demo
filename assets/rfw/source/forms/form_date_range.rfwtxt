@@ -1,0 +1,276 @@
+// Form 10: Date Range Picker
+// Start/end date fields that emit events to trigger host date picker dialogs.
+// Host handles actual date picker dialog and updates DynamicContent.
+//
+// Events fired:
+// - 'pick_start_date' with { formId: String, currentValue: String }
+// - 'pick_end_date' with { formId: String, currentValue: String }
+// - 'form_submit' with { formId: String, data: { startDate: String, endDate: String, nights: int } }
+// - 'form_clear_dates' with { formId: String }
+
+import core;
+import material;
+
+// Start date field component
+widget StartDateField = InkWell(
+  onTap: event "pick_start_date" {
+    formId: "date_range",
+    currentValue: data.startDate,
+  },
+  child: Container(
+    padding: [16.0],
+    decoration: {
+      border: {
+        color: 0xFF9E9E9E,
+        width: 1.0,
+      },
+      borderRadius: [4.0],
+    },
+    child: Row(
+      mainAxisSize: "max",
+      children: [
+        Icon(icon: 0xE916, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF757575),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: "start",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: "Check-in",
+                style: {
+                  fontSize: 12.0,
+                  color: 0xFF757575,
+                },
+              ),
+              SizedBox(height: 4.0),
+              switch data.hasStartDate {
+                true: Text(
+                  text: data.startDateDisplay,
+                  style: {
+                    fontSize: 16.0,
+                    color: 0xFF212121,
+                  },
+                ),
+                default: Text(
+                  text: "Select date",
+                  style: {
+                    fontSize: 16.0,
+                    color: 0xFF9E9E9E,
+                  },
+                ),
+              },
+            ],
+          ),
+        ),
+        Icon(icon: 0xE313, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF757575),
+      ],
+    ),
+  ),
+);
+
+// End date field component
+widget EndDateField = InkWell(
+  onTap: event "pick_end_date" {
+    formId: "date_range",
+    currentValue: data.endDate,
+  },
+  child: Container(
+    padding: [16.0],
+    decoration: {
+      border: {
+        color: 0xFF9E9E9E,
+        width: 1.0,
+      },
+      borderRadius: [4.0],
+    },
+    child: Row(
+      mainAxisSize: "max",
+      children: [
+        Icon(icon: 0xE916, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF757575),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: "start",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: "Check-out",
+                style: {
+                  fontSize: 12.0,
+                  color: 0xFF757575,
+                },
+              ),
+              SizedBox(height: 4.0),
+              switch data.hasEndDate {
+                true: Text(
+                  text: data.endDateDisplay,
+                  style: {
+                    fontSize: 16.0,
+                    color: 0xFF212121,
+                  },
+                ),
+                default: Text(
+                  text: "Select date",
+                  style: {
+                    fontSize: 16.0,
+                    color: 0xFF9E9E9E,
+                  },
+                ),
+              },
+            ],
+          ),
+        ),
+        Icon(icon: 0xE313, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF757575),
+      ],
+    ),
+  ),
+);
+
+widget DateRangeForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Select Travel Dates",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "Choose your check-in and check-out dates",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisSize: "min",
+          children: [
+            Expanded(
+              child: StartDateField(),
+            ),
+            SizedBox(width: 12.0),
+            Expanded(
+              child: EndDateField(),
+            ),
+          ],
+        ),
+        switch data.hasDateRange {
+          true: Padding(
+            padding: [0.0, 16.0, 0.0, 0.0],
+            child: ClipRRect(
+              borderRadius: [8.0],
+              child: ColoredBox(
+                color: 0xFFE3F2FD,
+                child: Padding(
+                  padding: [16.0],
+                  child: Row(
+                    mainAxisSize: "min",
+                    children: [
+                      Icon(icon: 0xE53B, fontFamily: "MaterialIcons", size: 24.0, color: 0xFF1976D2),
+                      SizedBox(width: 12.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: "start",
+                          mainAxisSize: "min",
+                          children: [
+                            Text(
+                              text: "Trip Duration",
+                              style: {
+                                fontSize: 12.0,
+                                color: 0xFF1976D2,
+                              },
+                            ),
+                            Text(
+                              text: data.nightsDisplay,
+                              style: {
+                                fontSize: 16.0,
+                                fontWeight: "bold",
+                                color: 0xFF1976D2,
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        switch data.validationError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 12.0, 0.0, 0.0],
+            child: Row(
+              mainAxisSize: "min",
+              children: [
+                Icon(icon: 0xE002, fontFamily: "MaterialIcons", size: 16.0, color: 0xFFF44336),
+                SizedBox(width: 4.0),
+                Text(
+                  text: data.validationError,
+                  style: {
+                    fontSize: 12.0,
+                    color: 0xFFF44336,
+                  },
+                ),
+              ],
+            ),
+          ),
+        },
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "end",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_clear_dates" {
+                formId: "date_range",
+              },
+              child: Text(
+                text: "Clear Dates",
+                style: { color: 0xFF757575 },
+              ),
+            ),
+            SizedBox(width: 12.0),
+            switch data.isValid {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "date_range",
+                  data: {
+                    startDate: data.startDate,
+                    endDate: data.endDate,
+                    nights: data.nights,
+                  },
+                },
+                child: Text(text: "Search Availability"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "date_range",
+                  reason: "incomplete_dates",
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Search Availability"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);

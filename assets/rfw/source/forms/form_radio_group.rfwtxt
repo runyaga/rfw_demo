@@ -1,0 +1,202 @@
+// Form 8: Radio Button Group with "Other" Option
+// Vertical radio group, "Other" reveals text input for custom value.
+// Radio buttons implemented using InkWell + icons since Radio not registered.
+//
+// Events fired:
+// - 'option_selected' with { groupId: String, value: String }
+// - 'other_specified' with { groupId: String, customValue: String }
+// - 'form_submit' with { formId: String, data: { contactMethod: String } | { contactMethod: "other", otherValue: String } }
+// - 'form_back' with { formId: String }
+
+import core;
+import material;
+
+// Radio option component - isSelected is passed from host
+// NOTE: Material Icon codepoints are inconsistent in RFW. Using text characters instead.
+widget RadioOption = InkWell(
+  onTap: event "option_selected" {
+    groupId: "contact_method",
+    value: args.value,
+  },
+  child: Padding(
+    padding: [12.0, 8.0, 12.0, 8.0],
+    child: Row(
+      mainAxisSize: "min",
+      children: [
+        switch args.isSelected {
+          true: Text(text: "●", style: { fontSize: 20.0, color: 0xFF1976D2 }),
+          default: Text(text: "○", style: { fontSize: 20.0, color: 0xFF757575 }),
+        },
+        SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: "start",
+            mainAxisSize: "min",
+            children: [
+              Text(
+                text: args.label,
+                style: {
+                  fontSize: 16.0,
+                  color: 0xFF212121,
+                },
+              ),
+              switch args.description {
+                "": SizedBox(height: 0.0),
+                default: Text(
+                  text: args.description,
+                  style: {
+                    fontSize: 12.0,
+                    color: 0xFF757575,
+                  },
+                ),
+              },
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+widget RadioGroupForm = Card(
+  color: 0xFFFFFFFF,
+  elevation: 2.0,
+  child: Padding(
+    padding: [16.0],
+    child: Column(
+      crossAxisAlignment: "stretch",
+      mainAxisSize: "min",
+      children: [
+        Text(
+          text: "Preferred Contact Method",
+          style: {
+            fontSize: 18.0,
+            fontWeight: "bold",
+            color: 0xFF212121,
+          },
+        ),
+        SizedBox(height: 8.0),
+        Text(
+          text: "How would you like us to contact you?",
+          style: {
+            fontSize: 14.0,
+            color: 0xFF757575,
+          },
+        ),
+        SizedBox(height: 4.0),
+        Text(
+          text: "Note: Using text glyphs (● ○) - Material Icon codepoints are inconsistent in RFW",
+          style: {
+            fontSize: 11.0,
+            color: 0xFF9E9E9E,
+            fontStyle: "italic",
+          },
+        ),
+        SizedBox(height: 12.0),
+        RadioOption(
+          value: "email",
+          label: "Email",
+          description: "We'll send updates to your inbox",
+          isSelected: data.emailSelected,
+        ),
+        Divider(height: 1.0, color: 0xFFE0E0E0),
+        RadioOption(
+          value: "phone",
+          label: "Phone Call",
+          description: "We'll call during business hours",
+          isSelected: data.phoneSelected,
+        ),
+        Divider(height: 1.0, color: 0xFFE0E0E0),
+        RadioOption(
+          value: "sms",
+          label: "Text Message (SMS)",
+          description: "Quick updates via text",
+          isSelected: data.smsSelected,
+        ),
+        Divider(height: 1.0, color: 0xFFE0E0E0),
+        RadioOption(
+          value: "other",
+          label: "Other",
+          description: "Specify your preferred method",
+          isSelected: data.otherSelected,
+        ),
+        switch data.showOtherInput {
+          true: Padding(
+            padding: [36.0, 8.0, 0.0, 0.0],
+            child: TextField(
+              value: data.otherValue,
+              decoration: {
+                labelText: "Please specify",
+                hintText: "e.g., Carrier Pigeon, Smoke Signals",
+                border: "outline",
+              },
+              onChanged: event "other_specified" {
+                groupId: "contact_method",
+                customValue: data.otherValue,
+              },
+            ),
+          ),
+          default: SizedBox(height: 0.0),
+        },
+        switch data.validationError {
+          "": SizedBox(height: 0.0),
+          default: Padding(
+            padding: [0.0, 12.0, 0.0, 0.0],
+            child: Text(
+              text: data.validationError,
+              style: {
+                fontSize: 12.0,
+                color: 0xFFF44336,
+              },
+            ),
+          ),
+        },
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: "spaceBetween",
+          mainAxisSize: "min",
+          children: [
+            TextButton(
+              onPressed: event "form_back" {
+                formId: "radio_group",
+              },
+              child: Row(
+                mainAxisSize: "min",
+                children: [
+                  Icon(icon: 0xE5CB, fontFamily: "MaterialIcons", size: 18.0, color: 0xFF757575),
+                  SizedBox(width: 4.0),
+                  Text(
+                    text: "Back",
+                    style: { color: 0xFF757575 },
+                  ),
+                ],
+              ),
+            ),
+            switch data.isValid {
+              true: ElevatedButton(
+                onPressed: event "form_submit" {
+                  formId: "radio_group",
+                  data: {
+                    contactMethod: data.selectedValue,
+                    otherValue: data.otherValue,
+                  },
+                },
+                child: Text(text: "Continue"),
+              ),
+              default: ElevatedButton(
+                onPressed: event "form_submit_denied" {
+                  formId: "radio_group",
+                  reason: data.validationReason,
+                },
+                style: {
+                  backgroundColor: 0xFFBDBDBD,
+                },
+                child: Text(text: "Continue"),
+              ),
+            },
+          ],
+        ),
+      ],
+    ),
+  ),
+);
