@@ -7,6 +7,8 @@ import 'package:rfw/formats.dart';
 
 import 'package:rfw_spike/core/rfw/runtime/rfw_environment.dart';
 
+@Tags(['golden'])
+
 /// Golden tests for RFW widgets per DESIGN.md Section 6.1
 ///
 /// Run with: flutter test --update-goldens test/rfw/goldens/
