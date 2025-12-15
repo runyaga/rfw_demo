@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Remote Flutter Widgets
-  rfw: ^1.0.31
+  rfw: ^1.1.0
 
   # State management
   flutter_riverpod: ^3.0.3
